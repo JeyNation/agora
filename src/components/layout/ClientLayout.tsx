@@ -7,10 +7,12 @@ import Fab from '@mui/material/Fab';
 import MenuIcon from '@mui/icons-material/Menu';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import SideNav, { drawerWidth } from './SideNav';
+import SideNav, { drawerDefaultWidth, drawerCollapsedWidth } from './SideNav';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
+  const [width, setWidth] = React.useState(drawerDefaultWidth);
+  const [collapsed, setCollapsed] = React.useState(false);
   const handleMenu = () => setOpen((s) => !s);
   const handleClose = () => setOpen(false);
 
@@ -20,7 +22,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <SideNav open={open} onClose={handleClose} />
+  <SideNav open={open} onClose={handleClose} width={width} setWidth={setWidth} collapsed={collapsed} setCollapsed={setCollapsed} />
 
       {/* Floating menu button on small screens */}
       {!isMdUp && (
@@ -40,7 +42,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           flexGrow: 1,
           p: 3,
           mt: 2,
-          ml: { md: `${drawerWidth}px` },
+          ml: { md: collapsed ? `${drawerCollapsedWidth}px` : `${width}px` },
         }}
       >
         {children}
