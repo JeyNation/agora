@@ -19,8 +19,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 type Props = {
   open?: boolean;
   onClose?: () => void;
-  width: number;
-  setWidth: (w: number) => void;
   collapsed: boolean;
   setCollapsed: (c: boolean) => void;
 };
@@ -28,66 +26,14 @@ type Props = {
 export const drawerDefaultWidth = 240;
 export const drawerCollapsedWidth = 72;
 
-export default function SideNav({ open = false, onClose, width, setWidth, collapsed, setCollapsed }: Props) {
+export default function SideNav({ open = false, onClose, collapsed, setCollapsed }: Props) {
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
   const variant = isMdUp ? 'permanent' : 'temporary';
   const drawerOpen = isMdUp ? true : open;
 
-  const paperRef = React.useRef<HTMLDivElement | null>(null);
-
-  // Drag to resize (only on permanent drawer)
-  React.useEffect(() => {
-    if (!isMdUp) return;
-    const paper = paperRef.current;
-    if (!paper) return;
-
-    let dragging = false;
-    const min = drawerCollapsedWidth;
-    const max = 600;
-    const snapThreshold = 16;
-
-    function onMove(e: MouseEvent) {
-      if (!dragging) return;
-      if (!paper) return;
-      const rect = paper.getBoundingClientRect();
-      const newWidth = Math.max(min, Math.min(max, e.clientX - rect.left));
-      // Snap to collapsed
-      if (newWidth <= drawerCollapsedWidth + snapThreshold) {
-        setWidth(drawerCollapsedWidth);
-        setCollapsed(true);
-      } else {
-        setWidth(newWidth);
-        if (collapsed) setCollapsed(false);
-      }
-    }
-
-    function onUp() {
-      dragging = false;
-      document.body.style.cursor = '';
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-    }
-
-    function onDown(e: MouseEvent) {
-      // Start only when clicking the resizer area
-      dragging = true;
-      document.body.style.cursor = 'col-resize';
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('mouseup', onUp);
-      e.preventDefault();
-    }
-
-    const resizer = paper.querySelector('.drawer-resizer') as HTMLDivElement | null;
-    resizer?.addEventListener('mousedown', onDown);
-
-    return () => {
-      resizer?.removeEventListener('mousedown', onDown);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-    };
-  }, [isMdUp, setWidth, setCollapsed, collapsed]);
+  // No drag-to-resize behavior: collapse only via toggle.
 
   return (
     <Drawer
@@ -95,15 +41,14 @@ export default function SideNav({ open = false, onClose, width, setWidth, collap
       open={drawerOpen}
       onClose={onClose}
       ModalProps={{ keepMounted: true }}
-      PaperProps={{
-        ref: paperRef,
-        sx: {
-          boxSizing: 'border-box',
-          width: `${width}px`,
-          transition: 'width 200ms ease',
-          overflowX: 'hidden',
-        },
-      }}
+        PaperProps={{
+          sx: {
+            boxSizing: 'border-box',
+            width: `${collapsed ? drawerCollapsedWidth : drawerDefaultWidth}px`,
+            transition: 'width 200ms ease',
+            overflowX: 'hidden',
+          },
+        }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', px: 1, py: 1 }}>
         <IconButton onClick={() => setCollapsed(!collapsed)} aria-label="toggle collapse">
@@ -114,7 +59,14 @@ export default function SideNav({ open = false, onClose, width, setWidth, collap
       <List>
         <ListItem disablePadding>
           <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
-            <ListItemIcon sx={{ minWidth: 0, mr: collapsed ? 0 : 2, justifyContent: 'center' }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                width: `${drawerCollapsedWidth}px`,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <HomeIcon />
             </ListItemIcon>
             {!collapsed && <ListItemText primary="Dashboard" />}
@@ -122,7 +74,14 @@ export default function SideNav({ open = false, onClose, width, setWidth, collap
         </ListItem>
         <ListItem disablePadding>
           <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
-            <ListItemIcon sx={{ minWidth: 0, mr: collapsed ? 0 : 2, justifyContent: 'center' }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                width: `${drawerCollapsedWidth}px`,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <AssessmentIcon />
             </ListItemIcon>
             {!collapsed && <ListItemText primary="Reports" />}
@@ -130,7 +89,14 @@ export default function SideNav({ open = false, onClose, width, setWidth, collap
         </ListItem>
         <ListItem disablePadding>
           <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
-            <ListItemIcon sx={{ minWidth: 0, mr: collapsed ? 0 : 2, justifyContent: 'center' }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                width: `${drawerCollapsedWidth}px`,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <SettingsIcon />
             </ListItemIcon>
             {!collapsed && <ListItemText primary="Settings" />}
@@ -139,21 +105,7 @@ export default function SideNav({ open = false, onClose, width, setWidth, collap
       </List>
 
       {/* resizer - only visible on md+ when permanent */}
-      {isMdUp && (
-        <Box
-          className="drawer-resizer"
-          sx={{
-            position: 'absolute',
-            right: -3,
-            top: 0,
-            bottom: 0,
-            width: 6,
-            cursor: 'col-resize',
-            zIndex: 1200,
-          }}
-          aria-hidden
-        />
-      )}
+      {/* no resizer when drag is disabled */}
     </Drawer>
   );
 }
