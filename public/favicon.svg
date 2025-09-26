@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 
+      Favicon for Agora:
+      - A stylized letter 'A' for "Agora".
+      - The negative space inside the 'A' forms an upward arrow, symbolizing growth.
+      - The solid, bold shape is highly visible at small sizes.
+      - Color: A modern, trustworthy teal (#14B8A6).
+    -->
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M32 4L0 60H12L20 44H44L52 60H64L32 4ZM32 20L40 40H24L32 20Z" fill="#14B8A6"/>
+</svg>
