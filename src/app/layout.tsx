@@ -1,40 +1,40 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "./styles/globals.css";
 import ClientLayout from "../components/layout/ClientLayout";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Agora",
-  description: "Stock Market Evaluation Tool",
-  icons: {
-	icon: [
-	  { url: "/favicon.svg", type: "image/svg+xml" },
-	  { url: "/favicon.ico", type: "image/x-icon" },
-	],
-	apple: [{ url: "/favicon.svg" }],
-  },
+	title: "Agora",
+	description: "Stock Market Evaluation Tool",
+	icons: {
+		icon: [
+			{ url: "/favicon.svg", type: "image/svg+xml" },
+			{ url: "/favicon.ico", type: "image/x-icon" },
+		],
+		apple: [{ url: "/favicon.svg" }],
+	},
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-	<html lang="en">
-	  <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-		<ClientLayout>{children}</ClientLayout>
-	  </body>
-	</html>
-  );
+	return (
+		<html lang="en">
+			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+				<ClientLayout>{children}</ClientLayout>
+			</body>
+		</html>
+	);
 }
