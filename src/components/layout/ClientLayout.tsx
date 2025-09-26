@@ -29,10 +29,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 			
 			{mounted && !isMdUp && (
 				<Fab
-				color="primary"
-				aria-label="open menu"
-				onClick={handleMenu}
-				sx={{ position: 'fixed', bottom: 16, left: 16, zIndex: (t) => t.zIndex.drawer + 2 }}
+					color="primary"
+					aria-label="open menu"
+					onClick={handleMenu}
+					sx={{ position: 'fixed', bottom: 16, left: 16, zIndex: (t) => t.zIndex.drawer + 2 }}
 				>
 					<MenuIcon />
 				</Fab>
@@ -41,12 +41,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 			<Box
 				component="main"
 				sx={{
-				flexGrow: 1,
-				p: 3,
-				mt: 2,
-				ml: { md: `${collapsed ? drawerCollapsedWidth : drawerDefaultWidth}px` },
+					flexGrow: 1,
+					p: 3,
+					mt: 2,
+					ml: { md: `${collapsed ? drawerCollapsedWidth : drawerDefaultWidth}px` },
 				}}
-				>
+			>
 				{children}
 			</Box>
 		</Box>

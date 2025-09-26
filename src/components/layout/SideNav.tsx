@@ -10,6 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SideNavItem from './SideNavItem';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
@@ -34,73 +35,33 @@ export default function SideNav({ open = false, onClose, collapsed, setCollapsed
   const drawerOpen = isMdUp ? true : open;
 
   return (
-	<Drawer
-	  variant={variant}
-	  open={drawerOpen}
-	  onClose={onClose}
-	  ModalProps={{ keepMounted: true }}
-		PaperProps={{
-		  sx: {
-			boxSizing: 'border-box',
-			width: `${collapsed ? drawerCollapsedWidth : drawerDefaultWidth}px`,
-			transition: 'width 200ms ease',
-			overflowX: 'hidden',
-		  },
-		}}
-	>
-	  <Box sx={{ display: 'flex', alignItems: 'center', px: 1, py: 1 }}>
-		<IconButton onClick={() => setCollapsed(!collapsed)} aria-label="toggle collapse">
-		  <MenuIcon />
-		</IconButton>
-	  </Box>
+		<Drawer
+			variant={variant}
+			open={drawerOpen}
+			onClose={onClose}
+			ModalProps={{ keepMounted: true }}
+			slotProps={{
+				paper: {
+					sx: {
+						boxSizing: 'border-box',
+						width: `${collapsed ? drawerCollapsedWidth : drawerDefaultWidth}px`,
+						transition: 'width 200ms ease',
+						overflowX: 'hidden',
+					},
+				},
+			}}
+		>
+		<Box sx={{ display: 'flex', alignItems: 'center', px: 1, py: 1 }}>
+			<IconButton onClick={() => setCollapsed(!collapsed)} aria-label="toggle collapse">
+				<MenuIcon />
+			</IconButton>
+		</Box>
 
-	  <List>
-		<ListItem disablePadding>
-		  <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
-			<ListItemIcon
-			  sx={{
-				minWidth: 0,
-				width: `${drawerCollapsedWidth}px`,
-				display: 'flex',
-				justifyContent: 'center',
-			  }}
-			>
-			  <HomeIcon />
-			</ListItemIcon>
-			{!collapsed && <ListItemText primary="Dashboard" />}
-		  </ListItemButton>
-		</ListItem>
-		<ListItem disablePadding>
-		  <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
-			<ListItemIcon
-			  sx={{
-				minWidth: 0,
-				width: `${drawerCollapsedWidth}px`,
-				display: 'flex',
-				justifyContent: 'center',
-			  }}
-			>
-			  <AssessmentIcon />
-			</ListItemIcon>
-			{!collapsed && <ListItemText primary="Reports" />}
-		  </ListItemButton>
-		</ListItem>
-		<ListItem disablePadding>
-		  <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
-			<ListItemIcon
-			  sx={{
-				minWidth: 0,
-				width: `${drawerCollapsedWidth}px`,
-				display: 'flex',
-				justifyContent: 'center',
-			  }}
-			>
-			  <SettingsIcon />
-			</ListItemIcon>
-			{!collapsed && <ListItemText primary="Settings" />}
-		  </ListItemButton>
-		</ListItem>
-	  </List>
+		<List>
+			<SideNavItem collapsed={collapsed} collapsedWidth={drawerCollapsedWidth} label="Dashboard" icon={<HomeIcon />} />
+			<SideNavItem collapsed={collapsed} collapsedWidth={drawerCollapsedWidth} label="Reports" icon={<AssessmentIcon />} />
+			<SideNavItem collapsed={collapsed} collapsedWidth={drawerCollapsedWidth} label="Settings" icon={<SettingsIcon />} />
+		</List>
 	</Drawer>
   );
 }
