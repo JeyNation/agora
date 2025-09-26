@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agora
 
-## Getting Started
+Lightweight Next.js application scaffolded with `create-next-app`.
 
-First, run the development server:
+This repository is configured to use pnpm as the package manager and is deployed on Vercel. It uses the Next.js App Router and Tailwind CSS.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Table of contents
+
+- [Requirements](#requirements)
+- [Local development](#local-development)
+- [Build for production](#build-for-production)
+- [Linting & Formatting](#linting--formatting)
+- [Tests](#tests)
+- [Deployments](#deployments)
+- [Repository structure](#repository-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Requirements
+
+- Node.js 18+ (recommended)
+- pnpm v7+ (the project was installed with pnpm v10)
+- Git
+
+## Local development
+
+1. Install dependencies:
+
+```powershell
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open http://localhost:3000 in your browser. The app uses the Next.js App Router—edit files under `src/app` to change pages.
 
-## Learn More
+## Build for production
 
-To learn more about Next.js, take a look at the following resources:
+Create an optimized production build:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+pnpm build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run the production build locally:
 
-## Deploy on Vercel
+```powershell
+pnpm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Linting & Formatting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+ESLint is configured. Run:
+
+```powershell
+pnpm lint
+```
+
+If you add Prettier later, include formatting scripts and configuration.
+
+## Tests
+
+No tests are configured by default. To add testing, consider adding Jest + React Testing Library or Playwright for E2E.
+
+## Deployments
+
+This project is deployed on Vercel and linked to the GitHub repository: `https://github.com/JeyNation/agora`.
+
+- Manual deploy using Vercel CLI:
+
+```powershell
+vercel --prod
+```
+
+- CI/CD: pushing to `main` will trigger a Vercel deployment (automatic if connected via the Vercel dashboard).
+
+## Repository structure
+
+- `src/app` — App Router pages & layouts
+- `src/styles` — global styles (Tailwind configured)
+- `public` — static assets
+
+## Contributing
+
+1. Fork the repo
+2. Create a feature branch: `git checkout -b feat/some-feature`
+3. Commit your changes: `git commit -m "feat: add ..."`
+4. Push branch and open a Pull Request
+
+## License
+
+This project is provided under the MIT License. See the `LICENSE` file for details.
+
+---
+
+If you'd like, I can also:
+- Add a `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`
+- Add a GitHub Actions workflow for linting and building on PRs
+- Add basic unit tests and an example test
+
+Tell me which you'd like next and I'll implement it.
