@@ -3,20 +3,46 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import TopBar from './TopBar';
-import SideNav from './SideNav';
+import Fab from '@mui/material/Fab';
+import MenuIcon from '@mui/icons-material/Menu';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import SideNav, { drawerWidth } from './SideNav';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const handleMenu = () => setOpen((s) => !s);
   const handleClose = () => setOpen(false);
 
+  const theme = useTheme();
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <TopBar onMenuClick={handleMenu} />
       <SideNav open={open} onClose={handleClose} />
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+
+      {/* Floating menu button on small screens */}
+      {!isMdUp && (
+        <Fab
+          color="primary"
+          aria-label="open menu"
+          onClick={handleMenu}
+          sx={{ position: 'fixed', bottom: 16, left: 16, zIndex: (t) => t.zIndex.drawer + 2 }}
+        >
+          <MenuIcon />
+        </Fab>
+      )}
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          mt: 2,
+          ml: { md: `${drawerWidth}px` },
+        }}
+      >
         {children}
       </Box>
     </Box>
