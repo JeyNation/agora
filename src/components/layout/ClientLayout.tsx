@@ -17,12 +17,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const handleClose = () => setOpen(false);
 
   const theme = useTheme();
-  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-  <SideNav open={open} onClose={handleClose} width={width} setWidth={setWidth} collapsed={collapsed} setCollapsed={setCollapsed} />
+      <SideNav open={open} onClose={handleClose} width={width} setWidth={setWidth} collapsed={collapsed} setCollapsed={setCollapsed} />
 
       {/* Floating menu button on small screens */}
       {!isMdUp && (

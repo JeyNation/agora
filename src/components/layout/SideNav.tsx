@@ -30,7 +30,7 @@ export const drawerCollapsedWidth = 72;
 
 export default function SideNav({ open = false, onClose, width, setWidth, collapsed, setCollapsed }: Props) {
   const theme = useTheme();
-  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
   const variant = isMdUp ? 'permanent' : 'temporary';
   const drawerOpen = isMdUp ? true : open;
