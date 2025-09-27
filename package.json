@@ -15,8 +15,7 @@
 	"@mui/material": "^7.3.2",
 	"next": "15.5.4",
 	"react": "19.1.0",
-	"react-dom": "19.1.0",
-	"sharp": "^0.34.4"
+	"react-dom": "19.1.0"
   },
   "devDependencies": {
 	"@eslint/eslintrc": "^3",
@@ -27,7 +26,7 @@
 	"eslint": "^9",
 	"eslint-config-next": "15.5.4",
 	"png-to-ico": "^3.0.1",
-
+	"sharp": "^0.34.4",
 	"svg2ico": "^1.0.35",
 	"tailwindcss": "^4",
 	"typescript": "^5"
