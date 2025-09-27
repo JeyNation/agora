@@ -37,6 +37,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ onNavigate }) => {
                 <MobileNavContent
                     isExpanded={isExpanded}
                     onItemClick={handleItemClick}
+                    onClose={() => setIsExpanded(false)}
                 />
             </Box>
         </Drawer>

@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import SideNavItem from './SideNavItem';
 import { NAV_GROUPS } from '../../app/constants';
 import { styles } from '../../app/styles/sidenav.styles';
+import { Divider } from '@mui/material';
 
 export interface SideNavProps {
     collapsed: boolean;
@@ -52,13 +53,14 @@ const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
                         key={groupIndex}
                         sx={styles.list(group.bottomAlign)}
                     >
+						{groupIndex > 0 && <Divider />}
                         {group.items.map((item) => (
-                            <SideNavItem
-                                key={item.label}
-                                collapsed={collapsed}
-                                label={item.label}
-                                icon={item.icon}
-                            />
+							<SideNavItem
+								key={item.label}
+								collapsed={collapsed}
+								label={item.label}
+								icon={item.icon}
+							/>
                         ))}
                     </List>
                 ))}

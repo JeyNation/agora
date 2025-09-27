@@ -19,6 +19,7 @@ const containerStyles: SxProps<Theme> = {
     height: HEADER_HEIGHT,
     borderBottom: 1,
     borderColor: 'divider',
+	backgroundColor: 'background.paper',
 };
 
 const searchSectionStyles: SxProps<Theme> = {
