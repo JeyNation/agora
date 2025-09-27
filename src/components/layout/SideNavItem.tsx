@@ -9,12 +9,11 @@ import Typography from '@mui/material/Typography';
 
 type Props = {
 	collapsed: boolean;
-	collapsedWidth: number | string;
 	label: string;
 	icon: React.ReactNode;
 };
 
-export default function SideNavItem({ collapsed, collapsedWidth, label, icon }: Props) {
+export default function SideNavItem({ collapsed, label, icon }: Props) {
 	return (
 		<ListItem disablePadding>
 			<ListItemButton

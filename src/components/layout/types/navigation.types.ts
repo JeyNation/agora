@@ -34,5 +34,6 @@ export interface SideNavProps {
  * Props for the MobileNav component
  */
 export interface MobileNavProps {
-    // Add any props needed for MobileNav
+    /** Handler for navigation item clicks */
+    onNavigate?: () => void;
 }

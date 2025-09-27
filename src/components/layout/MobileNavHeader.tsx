@@ -36,7 +36,7 @@ const hamburgerButtonStyles: SxProps<Theme> = {
     alignItems: 'center',
 };
 
-const searchSectionStyles: SxProps<Theme> = (theme) => ({
+const searchSectionStyles: SxProps<Theme> = {
     display: 'flex',
     alignItems: 'center',
     flexGrow: 1,
@@ -49,7 +49,7 @@ const searchSectionStyles: SxProps<Theme> = (theme) => ({
         xs: '100%',
         sm: '300px'
     },
-});
+};
 
 export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Props) {
 	const handleSearch = React.useCallback((query: string) => {

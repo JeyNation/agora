@@ -10,7 +10,7 @@ import SideNavItem from './SideNavItem';
 import { NAV_GROUPS } from './constants';
 import { styles } from './styles/sidenav.styles';
 import type { SideNavProps } from './types';
-import { DRAWER_COLLAPSED_WIDTH } from './constants';
+import { DRAWER_DEFAULT_WIDTH } from './constants';
 
 const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
     const handleToggle = React.useCallback(() => {
@@ -47,7 +47,6 @@ const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
                             <SideNavItem
                                 key={item.label}
                                 collapsed={collapsed}
-                                collapsedWidth={DRAWER_COLLAPSED_WIDTH}
                                 label={item.label}
                                 icon={item.icon}
                             />
