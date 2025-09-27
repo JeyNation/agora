@@ -29,9 +29,6 @@ importers:
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
-      sharp:
-        specifier: ^0.34.4
-        version: 0.34.4
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -57,6 +54,9 @@ importers:
       png-to-ico:
         specifier: ^3.0.1
         version: 3.0.1
+      sharp:
+        specifier: ^0.34.4
+        version: 0.34.4
       svg2ico:
         specifier: ^1.0.35
         version: 1.0.35(@types/react@19.1.13)
