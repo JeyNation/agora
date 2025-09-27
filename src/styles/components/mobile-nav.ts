@@ -1,7 +1,10 @@
 import { SxProps, Theme } from '@mui/material/styles';
-import { HEADER_HEIGHT, TRANSITION_DURATION } from '../constants';
+import { HEADER_HEIGHT, TRANSITION_DURATION } from '../theme/constants';
 
-export const styles = {
+/**
+ * Styles for the mobile navigation component
+ */
+export const mobileNav = {
     drawer: (isExpanded: boolean): SxProps<Theme> => ({
         '& .MuiDrawer-paper': {
             width: '100%',
@@ -16,11 +19,4 @@ export const styles = {
             }),
         },
     }),
-    container: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        overflow: 'hidden',
-    } as const,
 } as const;

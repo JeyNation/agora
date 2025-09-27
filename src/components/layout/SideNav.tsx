@@ -9,7 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
 import SideNavItem from './SideNavItem';
 import { NAV_GROUPS } from '../../app/constants';
-import { styles } from '../../app/styles/sidenav.styles';
+import { sideNav } from '../../styles/components/side-nav';
 import { Divider } from '@mui/material';
 
 export interface SideNavProps {
@@ -28,13 +28,13 @@ const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
             open={true}
             slotProps={{
                 paper: {
-                    sx: styles.drawer(collapsed),
+                    sx: sideNav.drawer(collapsed),
                 },
             }}
         >
-            <Box sx={styles.header}>
+            <Box sx={sideNav.header}>
                 {!collapsed && (
-					<Typography sx={styles.brandText}>
+					<Typography sx={sideNav.brandText}>
 						Agora
 					</Typography>
                 )}
@@ -47,11 +47,11 @@ const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
                 </IconButton>
             </Box>
 
-            <Box sx={styles.container}>
+            <Box sx={sideNav.container}>
                 {NAV_GROUPS.map((group, groupIndex) => (
                     <List 
                         key={groupIndex}
-                        sx={styles.list(group.bottomAlign)}
+                        sx={sideNav.list(group.bottomAlign)}
                     >
 						{groupIndex > 0 && <Divider />}
                         {group.items.map((item) => (

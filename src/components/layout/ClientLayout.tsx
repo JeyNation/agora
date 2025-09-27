@@ -7,7 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
-import { styles } from '../../app/styles/clientlayout.styles';
+import { clientLayout } from '../../styles/layout/client-layout';
 import SideNav from './SideNav';
 import MobileNav from './MobileNav';
 import PageHeader from './PageHeader';
@@ -44,7 +44,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             <PageHeader />
             <Box
                 component="main"
-                sx={styles.desktopMain(collapsed)}
+                sx={clientLayout.desktopMain(collapsed)}
             >
                 {children}
             </Box>
@@ -56,7 +56,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
 			<MobileNav />
             <Box
                 component="main"
-                sx={styles.mobileMain}
+                sx={clientLayout.mobileMain}
             >
                 {children}
             </Box>
@@ -64,7 +64,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     );
 
     return (
-        <Box sx={styles.container}>
+        <Box sx={clientLayout.container}>
             <CssBaseline />
             {isMdUp ? renderDesktopLayout() : renderMobileLayout()}
         </Box>

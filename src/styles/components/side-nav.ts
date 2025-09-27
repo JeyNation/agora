@@ -1,7 +1,16 @@
 import { SxProps, Theme } from '@mui/material/styles';
-import { DRAWER_DEFAULT_WIDTH, DRAWER_COLLAPSED_WIDTH, TRANSITION_DURATION, HEADER_HEIGHT } from '../constants';
+import { 
+    DRAWER_DEFAULT_WIDTH, 
+    DRAWER_COLLAPSED_WIDTH, 
+    TRANSITION_DURATION, 
+    HEADER_HEIGHT,
+    SPACING 
+} from '../theme/constants';
 
-export const styles = {
+/**
+ * Styles for the side navigation component
+ */
+export const sideNav = {
     drawer: (collapsed: boolean): SxProps<Theme> => ({
         boxSizing: 'border-box',
         width: `${collapsed ? DRAWER_COLLAPSED_WIDTH : DRAWER_DEFAULT_WIDTH}px`,
@@ -17,8 +26,8 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        px: 1,
-        py: 1,
+        px: SPACING.XS / SPACING.UNIT,
+        py: SPACING.XS / SPACING.UNIT,
         height: HEADER_HEIGHT,
         borderBottom: 1,
         borderColor: 'divider',
@@ -32,7 +41,7 @@ export const styles = {
         fontWeight: 'medium',
         fontSize: '1.125rem',
         letterSpacing: '-0.025em',
-		px: 1.5,
+        px: SPACING.SM / SPACING.UNIT,
     },
 
     container: {
@@ -46,29 +55,29 @@ export const styles = {
         ...(bottomAlign && { mt: 'auto' }),
     }),
 
-	itemButton: {
-		justifyContent: 'flex-start',
-		alignItems: 'center',
-		py: 1.5,
-	} as const,
+    itemButton: {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        py: SPACING.SM / SPACING.UNIT,
+    } as const,
 
-	itemIcon: {
-		minWidth: 0,
-		width: '42px',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'left',
-	} as const,
+    itemIcon: {
+        minWidth: 0,
+        width: '42px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'left',
+    } as const,
 
-	itemText: {
-		ml: 0,
-		margin: 0,
-	} as const,
+    itemText: {
+        ml: 0,
+        margin: 0,
+    } as const,
 
-	typography: {
-		lineHeight: 1,
-		whiteSpace: 'nowrap',
-		fontSize: '0.9rem',
-		margin: 0,
-	} as const,
+    typography: {
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
+        fontSize: '0.9rem',
+        margin: 0,
+    } as const,
 } as const;

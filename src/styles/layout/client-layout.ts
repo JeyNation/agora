@@ -1,13 +1,16 @@
 import { SxProps, Theme } from '@mui/material/styles';
-import { DRAWER_DEFAULT_WIDTH, DRAWER_COLLAPSED_WIDTH } from '../constants';
+import { 
+    DRAWER_DEFAULT_WIDTH, 
+    DRAWER_COLLAPSED_WIDTH, 
+    HEADER_HEIGHT,
+    TRANSITION_DURATION, 
+    SPACING 
+} from '../theme/constants';
 
-// Constants
-const MOBILE_NAV_HEIGHT = 56;
-const PAGE_HEADER_HEIGHT = 56;
-const CONTENT_PADDING = 3;
-const TRANSITION_DURATION = 200;
-
-export const styles = {
+/**
+ * Layout styles for the client layout component
+ */
+export const clientLayout = {
     container: {
         display: 'flex',
         minHeight: '100vh',
@@ -15,9 +18,9 @@ export const styles = {
 
     desktopMain: (collapsed: boolean): SxProps<Theme> => ({
         flexGrow: 1,
-        p: CONTENT_PADDING,
+        p: SPACING.MD / SPACING.UNIT, // Convert to MUI spacing units
         ml: `${collapsed ? DRAWER_COLLAPSED_WIDTH : DRAWER_DEFAULT_WIDTH}px`,
-        mt: `${PAGE_HEADER_HEIGHT}px`,
+        mt: `${HEADER_HEIGHT}px`,
         width: 'auto',
         transition: (theme: Theme) => theme.transitions.create(['margin-left'], {
             easing: theme.transitions.easing.easeInOut,
@@ -28,7 +31,7 @@ export const styles = {
     mobileMain: {
         flexGrow: 1,
         width: '100%',
-        mt: `${MOBILE_NAV_HEIGHT}px`,
-        p: CONTENT_PADDING,
+        mt: `${HEADER_HEIGHT}px`,
+        p: SPACING.MD / SPACING.UNIT, // Convert to MUI spacing units
     } as const,
 } as const;

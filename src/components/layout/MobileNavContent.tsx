@@ -1,15 +1,12 @@
 "use client";
 
 import React from 'react';
-import { SxProps, Theme } from '@mui/material/styles';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
-import { useGesture } from '@use-gesture/react';
 import MobileNavItem from './MobileNavItem';
-import { TRANSITION_DURATION } from '../../app/constants';
 import { NAV_GROUPS } from '../../app/constants';
-import { HEADER_HEIGHT } from '../../app/constants';
+import { mobileNavContent } from '../../styles/components/navigation';
 
 interface MobileNavContentProps {
     isExpanded: boolean;
@@ -17,62 +14,16 @@ interface MobileNavContentProps {
     onClose?: () => void;
 }
 
-const styles = {
-    content: (isExpanded: boolean): SxProps<Theme> => ({
-        opacity: isExpanded ? 1 : 0,
-        transition: (theme: Theme) => theme.transitions.create(['opacity', 'transform'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: TRANSITION_DURATION,
-        }),
-        overflow: 'hidden',
-        flexGrow: 1,
-        marginTop: `${HEADER_HEIGHT}px`,
-        position: 'relative',
-        touchAction: 'pan-y',
-    }),
-} as const;
-
 const MobileNavContent: React.FC<MobileNavContentProps> = ({ isExpanded, onItemClick, onClose }) => {
-    const [dragY, setDragY] = React.useState(0);
-
-    const bind = useGesture(
-        {
-            onDrag: ({ movement: [, my], direction: [, dy], velocity: [, vy], last }) => {
-                if (!isExpanded) return;
-                
-                // Only handle upward swipes
-                if (dy < 0 || my < 0) {
-                    if (last) {
-                        // If swipe was fast enough or dragged far enough, close the nav
-                        if (vy > 0.5 || my < -50) {
-                            onClose?.();
-                            setDragY(0);
-                        } else {
-                            // Spring back
-                            setDragY(0);
-                        }
-                    } else {
-                        setDragY(my);
-                    }
-                }
-            },
-        },
-        {
-            drag: {
-                from: () => [0, dragY],
-                filterTaps: true,
-                threshold: 5,
-            },
+    const handleEmptySpaceClick = React.useCallback(() => {
+        if (isExpanded) {
+            onClose?.();
         }
-    );
+    }, [isExpanded, onClose]);
 
     return (
         <Box
-            sx={{
-                ...styles.content(isExpanded),
-                transform: `translateY(${dragY}px)`,
-            }}
-            {...bind()}
+            sx={mobileNavContent.content(isExpanded)}
         >
             <Divider />
             {NAV_GROUPS.map((group, groupIndex) => (
@@ -90,6 +41,11 @@ const MobileNavContent: React.FC<MobileNavContentProps> = ({ isExpanded, onItemC
                     </List>
                 </React.Fragment>
             ))}
+            {/* Empty space that can be clicked to close the menu */}
+            <Box 
+                sx={mobileNavContent.emptySpace}
+                onClick={handleEmptySpaceClick}
+            />
         </Box>
     );
 }

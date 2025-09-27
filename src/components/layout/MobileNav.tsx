@@ -1,11 +1,10 @@
 "use client";
 
 import React from 'react';
-import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import MobileNavHeader from './MobileNavHeader';
 import MobileNavContent from './MobileNavContent';
-import { styles } from '../../app/styles/mobilenav.styles';
+import { mobileNav } from '../../styles/components/mobile-nav';
 
 interface MobileNavProps {
     onNavigate?: () => void;
@@ -27,9 +26,9 @@ const MobileNav: React.FC<MobileNavProps> = ({ onNavigate }) => {
         <Drawer
             anchor="top"
             variant="permanent"
-            sx={styles.drawer(isExpanded)}
+            sx={mobileNav.drawer(isExpanded)}
         >
-            <Box sx={styles.container}>
+            <>
                 <MobileNavHeader 
                     isExpanded={isExpanded}
                     onToggle={handleToggle}
@@ -39,7 +38,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ onNavigate }) => {
                     onItemClick={handleItemClick}
                     onClose={() => setIsExpanded(false)}
                 />
-            </Box>
+            </>
         </Drawer>
     );
 };
