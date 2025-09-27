@@ -73,6 +73,41 @@ export const sideNav = {
 };
 
 /**
+ * Mobile navigation header styles
+ */
+export const mobileNavHeader = {
+    container: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        pl: 1,
+        pr: 0,
+        zIndex: 100,
+        backgroundColor: 'background.paper',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    } as const,
+
+    hamburgerButton: {
+        display: 'flex',
+        alignItems: 'center',
+    } as const,
+
+    searchSection: {
+        display: 'flex',
+        alignItems: 'center',
+        flexGrow: 1,
+        ml: 1,
+        px: 1,
+        py: 1,
+        width: '100%',
+        maxWidth: '300px',
+    } as const,
+} as const;
+
+/**
  * Mobile navigation content styles
  */
 export const mobileNavContent = {
