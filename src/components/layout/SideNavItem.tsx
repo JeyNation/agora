@@ -27,7 +27,7 @@ export default function SideNavItem({ collapsed, collapsedWidth, label, icon }: 
 				<ListItemIcon
 					sx={{
 						minWidth: 0,
-						width: collapsedWidth,
+						width: '42px',
 						display: 'flex',
 						alignItems: 'center',
 						justifyContent: 'left',
@@ -47,13 +47,15 @@ export default function SideNavItem({ collapsed, collapsedWidth, label, icon }: 
 								whiteSpace: 'nowrap',
 								fontSize: '0.9rem',
 								margin: 0,
-								display: 'block',
 								}}
 							>
 								{label}
 							</Typography>
 						}
-						sx={{ ml: 0 }}
+						sx={{ 
+							ml: 0,
+							margin: 0,
+						}}
 					/>
 				)}
 			</ListItemButton>
