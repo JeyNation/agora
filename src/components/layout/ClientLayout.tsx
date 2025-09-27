@@ -1,16 +1,20 @@
 "use client";
 
 import React from 'react';
+import type { ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
-import { styles } from './styles/clientlayout.styles';
-import { ClientLayoutProps } from './types';
+import { styles } from '../../app/styles/clientlayout.styles';
 import SideNav from './SideNav';
 import MobileNav from './MobileNav';
 import PageHeader from './PageHeader';
+
+export interface ClientLayoutProps {
+    children: ReactNode;
+}
 
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     // State
@@ -25,6 +29,10 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     React.useEffect(() => {
         setMounted(true);
     }, []);
+
+    if (!mounted) {
+        return null;
+    }
 
     // Render helpers
     const renderDesktopLayout = () => (
@@ -45,7 +53,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
 
     const renderMobileLayout = () => (
         <>
-            {mounted && <MobileNav />}
+			<MobileNav />
             <Box
                 component="main"
                 sx={styles.mobileMain}

@@ -18,10 +18,10 @@ type Props = {
 };
 
 // Styles
-const containerStyles = ({ fullWidth, minWidth, maxWidth }: Partial<Props>): SxProps<Theme> => ({
+const containerStyles = ({ minWidth, maxWidth }: Partial<Props>): SxProps<Theme> => ({
     position: 'relative',
     borderRadius: 20,
-    width: fullWidth ? '100%' : 'auto',
+    width: '100%',
     minWidth,
     maxWidth,
     border: '1px solid',
@@ -48,14 +48,16 @@ const searchIconStyles: SxProps<Theme> = {
     alignItems: 'center',
     justifyContent: 'center',
     color: 'text.secondary',
+    right: 0,
+    top: 0,
 };
 
 const inputBaseStyles: SxProps<Theme> = {
     width: '100%',
     '& .MuiInputBase-input': {
         py: 1,
-        pl: 5,
-        pr: 2,
+        pl: 2,
+        pr: 5,
         width: '100%',
         fontSize: '0.875rem',
         transition: theme => theme.transitions.create('width'),
@@ -74,8 +76,17 @@ export default function SearchBar({
     maxWidth,
     className
 }: Props) {
+    const [mounted, setMounted] = React.useState(false);
     const [value, setValue] = React.useState('');
     const [isFocused, setIsFocused] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return null;
+    }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
@@ -103,9 +114,6 @@ export default function SearchBar({
             elevation={0}
             onSubmit={handleSubmit}
         >
-            <Box sx={searchIconStyles}>
-                <SearchIcon fontSize="small" />
-            </Box>
             <InputBase
                 sx={inputBaseStyles}
                 placeholder={placeholder}
@@ -117,6 +125,9 @@ export default function SearchBar({
                 value={value}
                 onChange={handleChange}
             />
+            <Box sx={searchIconStyles}>
+                <SearchIcon fontSize="small" />
+            </Box>
         </Paper>
     );
 }

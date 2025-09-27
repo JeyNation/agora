@@ -7,10 +7,13 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideNavItem from './SideNavItem';
-import { NAV_GROUPS } from './constants';
-import { styles } from './styles/sidenav.styles';
-import type { SideNavProps } from './types';
-import { DRAWER_DEFAULT_WIDTH } from './constants';
+import { NAV_GROUPS } from '../../app/constants';
+import { styles } from '../../app/styles/sidenav.styles';
+
+export interface SideNavProps {
+    collapsed: boolean;
+    setCollapsed: (collapsed: boolean) => void;
+}
 
 const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
     const handleToggle = React.useCallback(() => {

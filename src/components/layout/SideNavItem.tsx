@@ -6,6 +6,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import { styles } from '../../app/styles/sidenav.styles';
 
 type Props = {
 	collapsed: boolean;
@@ -16,22 +17,8 @@ type Props = {
 export default function SideNavItem({ collapsed, label, icon }: Props) {
 	return (
 		<ListItem disablePadding>
-			<ListItemButton
-				sx={{
-					justifyContent: 'flex-start',
-					alignItems: 'center',
-					py: 1.5,
-				}}
-			>
-				<ListItemIcon
-					sx={{
-						minWidth: 0,
-						width: '42px',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'left',
-					}}
-				>
+			<ListItemButton sx={styles.itemButton}>
+				<ListItemIcon sx={styles.itemIcon}>
 					{icon}
 				</ListItemIcon>
 
@@ -41,20 +28,12 @@ export default function SideNavItem({ collapsed, label, icon }: Props) {
 							<Typography
 								noWrap
 								component="span"
-								sx={{
-								lineHeight: 1,
-								whiteSpace: 'nowrap',
-								fontSize: '0.9rem',
-								margin: 0,
-								}}
+								sx={styles.typography}
 							>
 								{label}
 							</Typography>
 						}
-						sx={{ 
-							ml: 0,
-							margin: 0,
-						}}
+						sx={styles.itemText}
 					/>
 				)}
 			</ListItemButton>

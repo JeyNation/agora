@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from '../common/SearchBar';
 
-import { HEADER_HEIGHT, SEARCH_BAR_PLACEHOLDER } from './constants';
+import { HEADER_HEIGHT, SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
 
 // Types
 type Props = {
@@ -22,13 +22,13 @@ const containerStyles: SxProps<Theme> = {
     top: 0,
     right: 0,
     left: 0,
+    pl: 1,
+	pr: 0,
     zIndex: 100,
-    height: HEADER_HEIGHT,
     backgroundColor: 'background.paper',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    px: 1,
 };
 
 const hamburgerButtonStyles: SxProps<Theme> = {
@@ -41,14 +41,10 @@ const searchSectionStyles: SxProps<Theme> = {
     alignItems: 'center',
     flexGrow: 1,
     ml: 1,
-    width: {
-        xs: '100%',
-        sm: 'auto'
-    },
-    maxWidth: {
-        xs: '100%',
-        sm: '300px'
-    },
+    px: 1,
+	py: 1,
+    width: '100%',
+	maxWidth: '300px',
 };
 
 export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Props) {
@@ -71,8 +67,6 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 			</Box>
 			<Box sx={searchSectionStyles}>
 				<SearchBar 
-					fullWidth
-					minWidth="120px"
 					onSearch={handleSearch}
 					placeholder={SEARCH_BAR_PLACEHOLDER}
 				/>

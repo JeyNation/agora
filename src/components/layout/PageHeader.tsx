@@ -4,7 +4,7 @@ import React from 'react';
 import { SxProps, Theme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import SearchBar from '../common/SearchBar';
-import { HEADER_HEIGHT, SEARCH_BAR_PLACEHOLDER } from './constants';
+import { HEADER_HEIGHT, SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
 
 // Types
 type Props = {
@@ -23,11 +23,13 @@ const containerStyles: SxProps<Theme> = {
 
 const searchSectionStyles: SxProps<Theme> = {
     display: 'flex',
-	float: 'right',
+	position: 'absolute',
+	right: 0,
     alignItems: 'center',
     justifyContent: 'flex-end',
     px: 1,
 	py: 1,
+	width: '300px',
 };
 
 export default function PageHeader({ onSearch }: Props) {
@@ -41,7 +43,6 @@ export default function PageHeader({ onSearch }: Props) {
 				<SearchBar 
 					onSearch={handleSearch}
 					placeholder={SEARCH_BAR_PLACEHOLDER}
-					maxWidth="300px"
 				/>
 			</Box>
         </Box>

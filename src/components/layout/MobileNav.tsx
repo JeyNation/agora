@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import MobileNavHeader from './MobileNavHeader';
 import MobileNavContent from './MobileNavContent';
-import { styles } from './styles/mobilenav.styles';
+import { styles } from '../../app/styles/mobilenav.styles';
 
 interface MobileNavProps {
     onNavigate?: () => void;

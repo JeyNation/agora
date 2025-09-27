@@ -33,4 +33,30 @@ export const styles = {
         borderColor: 'divider',
         ...(bottomAlign && { mt: 'auto' }),
     }),
+
+	itemButton: {
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+		py: 1.5,
+	} as const,
+
+	itemIcon: {
+		minWidth: 0,
+		width: '42px',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'left',
+	} as const,
+
+	itemText: {
+		ml: 0,
+		margin: 0,
+	} as const,
+
+	typography: {
+		lineHeight: 1,
+		whiteSpace: 'nowrap',
+		fontSize: '0.9rem',
+		margin: 0,
+	} as const,
 } as const;

@@ -6,9 +6,9 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import MobileNavItem from './MobileNavItem';
-import { TRANSITION_DURATION } from './constants';
-import { NAV_GROUPS } from './constants';
-import { HEADER_HEIGHT } from './constants';
+import { TRANSITION_DURATION } from '../../app/constants';
+import { NAV_GROUPS } from '../../app/constants';
+import { HEADER_HEIGHT } from '../../app/constants';
 
 interface MobileNavContentProps {
     isExpanded: boolean;
