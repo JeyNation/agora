@@ -1,81 +1,107 @@
 import { Theme } from '@mui/material';
 import type { SxProps } from '@mui/material/styles';
-import { NAV_ITEM_HEIGHT, HEADER_HEIGHT, TRANSITION_DURATION } from '../theme/constants';
+import { 
+    DRAWER_DEFAULT_WIDTH, 
+    DRAWER_COLLAPSED_WIDTH, 
+    TRANSITION_DURATION, 
+    HEADER_HEIGHT,
+    SPACING 
+} from '../theme/constants';
 
 /**
- * Navigation item styles
- */
-export const navItem = {
-    root: {
-        height: NAV_ITEM_HEIGHT,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        textDecoration: 'none',
-        color: 'inherit',
-        width: '100%',
-    },
-    icon: {
-        minWidth: 0,
-        marginRight: 3,
-        justifyContent: 'center',
-        color: (theme: Theme) => theme.palette.text.secondary,
-    },
-    label: {
-        marginLeft: 2,
-    },
-};
-
-/**
- * Mobile navigation styles
- */
-export const mobileNav = {
-    drawer: {
-        '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: '100%',
-            height: '90vh',
-            borderTopLeftRadius: '16px',
-            borderTopRightRadius: '16px',
-        },
-    },
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 1199,
-    },
-};
-
-/**
- * Side navigation styles
+ * Styles for the side navigation component
  */
 export const sideNav = {
-    drawer: (theme: Theme) => ({
-        width: '100%',
-        flexShrink: 0,
-        whiteSpace: 'nowrap',
+    drawer: (collapsed: boolean): SxProps<Theme> => ({
         boxSizing: 'border-box',
-        '& .MuiDrawer-paper': {
-            width: '100%',
-            boxSizing: 'border-box',
-            borderRight: `1px solid ${theme.palette.divider}`,
-            backgroundColor: theme.palette.background.paper,
-            overflow: 'hidden',
-        },
+        width: `${collapsed ? DRAWER_COLLAPSED_WIDTH : DRAWER_DEFAULT_WIDTH}px`,
+        transition: (theme: Theme) => 
+            theme.transitions.create('width', {
+                easing: theme.transitions.easing.easeInOut,
+                duration: TRANSITION_DURATION,
+            }),
+        overflowX: 'hidden',
     }),
-    list: {
-        padding: 0,
+
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        px: SPACING.XS / SPACING.UNIT,
+        py: SPACING.XS / SPACING.UNIT,
+        height: HEADER_HEIGHT,
+        borderBottom: 1,
+        borderColor: 'divider',
+        transition: (theme: Theme) => theme.transitions.create(['padding'], {
+            easing: theme.transitions.easing.easeInOut,
+            duration: TRANSITION_DURATION,
+        }),
     },
-};
+
+    brandText: {
+        fontWeight: 'medium',
+        fontSize: '1.125rem',
+        letterSpacing: '-0.025em',
+        px: SPACING.SM / SPACING.UNIT,
+    },
+
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    } as const,
+
+    list: (bottomAlign?: boolean): SxProps<Theme> => ({
+        borderColor: 'divider',
+        ...(bottomAlign && { mt: 'auto' }),
+    }),
+
+    itemButton: {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        py: SPACING.SM / SPACING.UNIT,
+    } as const,
+
+    itemIcon: {
+        minWidth: 0,
+        width: '42px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'left',
+    } as const,
+
+    itemText: {
+        ml: 0,
+        margin: 0,
+    } as const,
+
+    typography: {
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
+        fontSize: '0.9rem',
+        margin: 0,
+    } as const,
+} as const;
 
 /**
- * Mobile navigation header styles
+ * Styles for the mobile navigation component
  */
-export const mobileNavHeader = {
+export const mobileNav = {
+    drawer: (isExpanded: boolean): SxProps<Theme> => ({
+        '& .MuiDrawer-paper': {
+            width: '100%',
+            background: 'background.paper',
+            borderTop: 0,
+            height: '100%',
+            maxHeight: isExpanded ? '100vh' : `${HEADER_HEIGHT}px`,
+            overflow: 'hidden',
+            transition: (theme: Theme) => theme.transitions.create(['max-height'], {
+                easing: theme.transitions.easing.easeInOut,
+                duration: TRANSITION_DURATION,
+            }),
+        },
+    }),
+
     container: {
         position: 'absolute',
         top: 0,
@@ -105,12 +131,7 @@ export const mobileNavHeader = {
         width: '100%',
         maxWidth: '300px',
     } as const,
-} as const;
 
-/**
- * Mobile navigation content styles
- */
-export const mobileNavContent = {
     content: (isExpanded: boolean): SxProps<Theme> => ({
         opacity: isExpanded ? 1 : 0,
         transition: (theme: Theme) => theme.transitions.create(['opacity'], {
@@ -124,6 +145,7 @@ export const mobileNavContent = {
         display: 'flex',
         flexDirection: 'column',
     }),
+
     emptySpace: {
         flexGrow: 1,
         cursor: 'pointer',

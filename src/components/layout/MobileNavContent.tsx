@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import MobileNavItem from './MobileNavItem';
 import { NAV_GROUPS } from '../../app/constants';
-import { mobileNavContent } from '../../styles/components/navigation';
+import { mobileNav } from '../../styles/components/navigation';
 
 interface MobileNavContentProps {
     isExpanded: boolean;
@@ -23,7 +23,7 @@ const MobileNavContent: React.FC<MobileNavContentProps> = ({ isExpanded, onItemC
 
     return (
         <Box
-            sx={mobileNavContent.content(isExpanded)}
+            sx={mobileNav.content(isExpanded)}
         >
             <Divider />
             {NAV_GROUPS.map((group, groupIndex) => (
@@ -43,7 +43,7 @@ const MobileNavContent: React.FC<MobileNavContentProps> = ({ isExpanded, onItemC
             ))}
             {/* Empty space that can be clicked to close the menu */}
             <Box 
-                sx={mobileNavContent.emptySpace}
+                sx={mobileNav.emptySpace}
                 onClick={handleEmptySpaceClick}
             />
         </Box>

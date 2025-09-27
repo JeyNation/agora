@@ -6,7 +6,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { sideNav } from '../../styles/components/side-nav';
+import { sideNav } from '../../styles/components/navigation';
 import { Tooltip } from '@mui/material';
 
 type Props = {

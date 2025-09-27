@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import Paper from '@mui/material/Paper';
-import { searchBar } from '../../styles/components/common';
+import { searchBar } from '../../styles/components/search-bar';
 
 // Types
 type Props = {

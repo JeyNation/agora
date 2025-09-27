@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from '../common/SearchBar';
 import { SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
-import { mobileNavHeader } from '../../styles/components/navigation';
+import { mobileNav } from '../../styles/components/navigation';
 
 // Types
 type Props = {
@@ -21,8 +21,8 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 	}, [onSearch]);
 
 	return (
-		<Box sx={mobileNavHeader.container}>
-			<Box sx={mobileNavHeader.hamburgerButton}>
+		<Box sx={mobileNav.container}>
+			<Box sx={mobileNav.hamburgerButton}>
 				<IconButton
 					onClick={onToggle}
 					size="medium"
@@ -33,7 +33,7 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 					<MenuIcon />
 				</IconButton>
 			</Box>
-			<Box sx={mobileNavHeader.searchSection}>
+			<Box sx={mobileNav.searchSection}>
 				<SearchBar 
 					onSearch={handleSearch}
 					placeholder={SEARCH_BAR_PLACEHOLDER}

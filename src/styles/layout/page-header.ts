@@ -1,5 +1,3 @@
-import { Theme } from '@mui/material';
-import type { SxProps } from '@mui/material/styles';
 import { HEADER_HEIGHT } from '../theme/constants';
 
 /**
