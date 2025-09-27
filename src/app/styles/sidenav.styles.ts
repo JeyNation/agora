@@ -13,7 +13,7 @@ export const styles = {
         overflowX: 'hidden',
     }),
 
-    header: (collapsed: boolean): SxProps<Theme> => ({
+    header: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -26,7 +26,7 @@ export const styles = {
             easing: theme.transitions.easing.easeInOut,
             duration: TRANSITION_DURATION,
         }),
-    }),
+    },
 
     brandText: {
         fontWeight: 'medium',
