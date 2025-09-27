@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from '../common/SearchBar';
 
-import { HEADER_HEIGHT, SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
+import { SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
 
 // Types
 type Props = {
