@@ -4,7 +4,7 @@ import React from 'react';
 import Drawer from '@mui/material/Drawer';
 import MobileNavHeader from './MobileNavHeader';
 import MobileNavContent from './MobileNavContent';
-import { mobileNav } from '../../styles/components/navigation';
+import { mobileNav } from '../../../styles/components/navigation';
 
 interface MobileNavProps {
     onNavigate?: () => void;

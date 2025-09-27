@@ -2,9 +2,9 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
-import SearchBar from '../common/SearchBar';
-import { SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
-import { pageHeader } from '../../styles/layout/page-header';
+import SearchBar from '../../common/SearchBar';
+import { SEARCH_BAR_PLACEHOLDER } from '../../../app/constants';
+import { pageHeader } from '../../../styles/layout/page-header';
 
 // Types
 type Props = {

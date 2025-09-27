@@ -4,9 +4,9 @@ import React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchBar from '../common/SearchBar';
-import { SEARCH_BAR_PLACEHOLDER } from '../../app/constants';
-import { mobileNav } from '../../styles/components/navigation';
+import SearchBar from '../../common/SearchBar';
+import { SEARCH_BAR_PLACEHOLDER } from '../../../app/constants';
+import { mobileNav } from '../../../styles/components/navigation';
 
 // Types
 type Props = {

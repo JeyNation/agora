@@ -5,8 +5,8 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import MobileNavItem from './MobileNavItem';
-import { NAV_GROUPS } from '../../app/constants';
-import { mobileNav } from '../../styles/components/navigation';
+import { NAV_GROUPS } from '../../../app/constants';
+import { mobileNav } from '../../../styles/components/navigation';
 
 interface MobileNavContentProps {
     isExpanded: boolean;

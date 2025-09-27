@@ -8,9 +8,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
 import { clientLayout } from '../../styles/layout/client-layout';
-import SideNav from './SideNav';
-import MobileNav from './MobileNav';
-import PageHeader from './PageHeader';
+import SideNav from './web/SideNav';
+import MobileNav from './mobile/MobileNav';
+import PageHeader from './web/PageHeader';
 
 export interface ClientLayoutProps {
     children: ReactNode;

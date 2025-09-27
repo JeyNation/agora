@@ -8,8 +8,8 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
 import SideNavItem from './SideNavItem';
-import { NAV_GROUPS } from '../../app/constants';
-import { sideNav } from '../../styles/components/navigation';
+import { NAV_GROUPS } from '../../../app/constants';
+import { sideNav } from '../../../styles/components/navigation';
 import { Divider } from '@mui/material';
 
 export interface SideNavProps {
