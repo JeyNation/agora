@@ -13,15 +13,27 @@ export const styles = {
         overflowX: 'hidden',
     }),
 
-    header: {
+    header: (collapsed: boolean): SxProps<Theme> => ({
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
         px: 1,
         py: 1,
-		height: HEADER_HEIGHT,
-		borderBottom: 1,
-		borderColor: 'divider',
-    } as const,
+        height: HEADER_HEIGHT,
+        borderBottom: 1,
+        borderColor: 'divider',
+        transition: (theme: Theme) => theme.transitions.create(['padding'], {
+            easing: theme.transitions.easing.easeInOut,
+            duration: TRANSITION_DURATION,
+        }),
+    }),
+
+    brandText: {
+        fontWeight: 'medium',
+        fontSize: '1.125rem',
+        letterSpacing: '-0.025em',
+		px: 1.5,
+    },
 
     container: {
         display: 'flex',

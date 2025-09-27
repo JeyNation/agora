@@ -1,1 +1,1 @@
-export const SEARCH_BAR_PLACEHOLDER = "Enter Ticker";
+export const SEARCH_BAR_PLACEHOLDER = "Search Ticker";

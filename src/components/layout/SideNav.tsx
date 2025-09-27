@@ -6,6 +6,8 @@ import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
+import Typography from '@mui/material/Typography';
 import SideNavItem from './SideNavItem';
 import { NAV_GROUPS } from '../../app/constants';
 import { styles } from '../../app/styles/sidenav.styles';
@@ -30,7 +32,12 @@ const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
                 },
             }}
         >
-            <Box sx={styles.header}>
+            <Box sx={styles.header(collapsed)}>
+                {!collapsed && (
+					<Typography sx={styles.brandText}>
+						Agora
+					</Typography>
+                )}
                 <IconButton 
                     onClick={handleToggle} 
                     aria-label={collapsed ? 'expand navigation' : 'collapse navigation'}
