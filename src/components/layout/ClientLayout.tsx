@@ -41,7 +41,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
                 collapsed={collapsed} 
                 setCollapsed={setCollapsed} 
             />
-            <PageHeader />
+            <PageHeader collapsed={collapsed} />
             <Box
                 component="main"
                 sx={clientLayout.desktopMain(collapsed)}
