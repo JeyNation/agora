@@ -60,6 +60,7 @@ const SideNav: React.FC<SideNavProps> = ({ collapsed, setCollapsed }) => {
 								collapsed={collapsed}
 								label={item.label}
 								icon={item.icon}
+								href={item.href}
 							/>
                         ))}
                     </List>

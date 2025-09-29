@@ -44,6 +44,7 @@ export default function SearchBar({
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         onSearch?.(value);
+        setValue(''); // Clear the input after search
     };
 
     const handleFocus = () => setIsFocused(true);

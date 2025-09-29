@@ -1,0 +1,222 @@
+"use client";
+
+import React from 'react';
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import * as d3 from 'd3';
+import { lineChart } from '../../styles/components/charts';
+
+interface DataPoint {
+    date: Date;
+    value: number;
+}
+
+type TimeRange = 'day' | 'week' | 'month' | 'year';
+
+interface LineChartProps {
+    width?: number;
+    height?: number;
+    data?: DataPoint[];
+    timeRange?: TimeRange;
+}
+
+// Utility function to get the date range based on timeRange
+function getDateRange(timeRange: TimeRange): [Date, Date] {
+    const now = new Date();
+    switch (timeRange) {
+        case 'day':
+            return [d3.timeDay.offset(now, -1), now];
+        case 'week':
+            return [d3.timeWeek.offset(now, -1), now];
+        case 'month':
+            return [d3.timeMonth.offset(now, -1), now];
+        case 'year':
+            return [d3.timeYear.offset(now, -10), now];
+        default:
+            return [d3.timeDay.offset(now, -7), now];
+    }
+}
+
+// Utility function to filter visible ticks
+function filterTicks(timeRange: TimeRange): boolean {
+    switch (timeRange) {
+        case 'day':
+            return true; // Show every hour
+        case 'week':
+            return true; // Show every day
+        case 'month':
+            return true; // Show every week
+        case 'year':
+            return true; // Show every month
+        default:
+            return true;
+    }
+}
+
+const MARGIN = { top: 20, right: 20, bottom: 30, left: 40 };
+const DEFAULT_WIDTH = 600;
+const DEFAULT_HEIGHT = 400;
+
+export default function LineChart({ 
+    width = DEFAULT_WIDTH, 
+    height = DEFAULT_HEIGHT,
+    data: propData,
+    timeRange = 'day'
+}: LineChartProps) {
+    const theme = useTheme();
+    const svgRef = React.useRef<SVGSVGElement>(null);
+    const data = propData ?? generateDummyData(timeRange);
+
+    React.useEffect(() => {
+        if (!svgRef.current || !data.length) return;
+
+        // Clear previous content
+        const svg = d3.select(svgRef.current);
+        svg.selectAll('*').remove();
+
+        // Calculate dimensions
+        const innerWidth = width - MARGIN.left - MARGIN.right;
+        const innerHeight = height - MARGIN.top - MARGIN.bottom;
+
+        // Create scales
+        const xScale = d3.scaleTime()
+            .domain(d3.extent(data, (d: DataPoint) => d.date) as [Date, Date])
+            .range([0, innerWidth]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(data, (d: DataPoint) => d.value) as number])
+            .range([innerHeight, 0]);
+
+        // Create line generator
+        const line = d3.line<DataPoint>()
+            .x((d: DataPoint) => xScale(d.date))
+            .y((d: DataPoint) => yScale(d.value));
+
+        // Create container group
+        const g = svg.append('g')
+            .attr('transform', `translate(${MARGIN.left},${MARGIN.top})`);
+
+        // Set time range specific configurations
+        const timeConfig = {
+            day: {
+                format: d3.timeFormat('%I:%M%p'), // 1:00PM etc
+                interval: d3.timeHour,
+                tickCount: 24
+            },
+            week: {
+                format: d3.timeFormat('%a %b %d'), // Mon Sep 28
+                interval: d3.timeDay,
+                tickCount: 7
+            },
+            month: {
+                format: d3.timeFormat('%b %d'), // Sep 28
+                interval: d3.timeWeek,
+                tickCount: 4
+            },
+            year: {
+                format: d3.timeFormat('%b %Y'), // Sep 2025
+                interval: d3.timeMonth,
+                tickCount: 12
+            }
+        }[timeRange];
+
+        // Set the domain based on the time range
+        xScale.domain(getDateRange(timeRange));
+
+        // Add x-axis with formatted ticks
+        const xAxis = g.append('g')
+            .attr('class', 'x-axis')
+            .attr('transform', `translate(0,${innerHeight})`)
+            .call(
+                d3.axisBottom(xScale)
+                    .ticks(timeConfig.interval, timeConfig.tickCount)
+                    .tickFormat((d: Date | d3.NumberValue) => {
+                        if (!(d instanceof Date)) return '';
+                        return filterTicks(timeRange) ? timeConfig.format(d) : '';
+                    })
+            )
+            .style('color', theme.palette.text.secondary);
+
+        // Rotate labels if needed
+        // Rotate labels for day and week view to prevent overlap
+        if (timeRange === 'day' || timeRange === 'week') {
+            xAxis.selectAll('text')
+                .style('text-anchor', 'end')
+                .attr('dx', '-.8em')
+                .attr('dy', '.15em')
+                .attr('transform', 'rotate(-45)');
+        }
+
+        // Add y-axis
+        g.append('g')
+            .attr('class', 'y-axis')
+            .call(d3.axisLeft(yScale))
+            .style('color', theme.palette.text.secondary);
+
+        // Add line path
+        g.append('path')
+            .datum(data)
+            .attr('class', 'line')
+            .attr('d', line)
+            .style('stroke', theme.palette.primary.main)
+            .style('fill', 'none')
+            .style('stroke-width', 2);
+
+    }, [data, width, height, theme.palette, timeRange]);
+
+    return (
+        <Box sx={lineChart.container}>
+            <svg 
+                ref={svgRef}
+                style={lineChart.svg as React.CSSProperties}
+                width={width}
+                height={height}
+            />
+        </Box>
+    );
+}
+
+// Helper function to generate dummy data - TO BE REMOVED IN PRODUCTION
+function generateDummyData(timeRange: TimeRange = 'day'): DataPoint[] {
+    console.log('Generating dummy data with timeRange:', timeRange);
+	
+    const [startDate, endDate] = getDateRange(timeRange);
+    const data: DataPoint[] = [];
+    
+    // Define the interval for data points (for smooth lines)
+    let unit: d3.CountableTimeInterval;
+    let step: number;
+
+    switch (timeRange) {
+        case 'day':
+            unit = d3.timeMinute;
+            step = 15;  // Every 15 minutes
+            break;
+        case 'week':
+            unit = d3.timeHour;
+            step = 6;   // Every 6 hours
+            break;
+        case 'month':
+            unit = d3.timeDay;
+            step = 1;   // Every day
+            break;
+        case 'year':
+            unit = d3.timeWeek;
+            step = 1;   // Every week
+            break;
+        default:
+            console.error(`Invalid timeRange: ${timeRange}`);
+            return [];
+    }
+
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        data.push({
+            date: new Date(currentDate),
+            value: Math.random() * 100 + 50 // Random value between 50 and 150
+        });
+        currentDate = unit.offset(currentDate, step);
+    }
+
+    return data;
+}

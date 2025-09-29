@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ReactElement } from 'react';
 import HomeIcon from '@mui/icons-material/Home';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import ResearchIcon from '@mui/icons-material/Science';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 interface NavItem {
@@ -19,7 +19,7 @@ export const NAV_GROUPS: NavGroup[] = [
     {
         items: [
             { label: 'Dashboard', icon: <HomeIcon />, href: '/' },
-            { label: 'Reports', icon: <AssessmentIcon />, href: '/reports' },
+            { label: 'Research', icon: <ResearchIcon />, href: '/research' },
         ],
     },
     {

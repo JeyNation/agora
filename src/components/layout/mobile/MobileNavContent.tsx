@@ -36,6 +36,7 @@ const MobileNavContent: React.FC<MobileNavContentProps> = ({ isExpanded, onItemC
                                 label={item.label}
                                 icon={item.icon}
                                 onClick={onItemClick}
+                                href={item.href}
                             />
                         ))}
                     </List>

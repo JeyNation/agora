@@ -60,6 +60,12 @@ export const sideNav = {
         justifyContent: 'flex-start',
         alignItems: 'center',
         py: SPACING.SM / SPACING.UNIT,
+        '&.Mui-selected': {
+            backgroundColor: 'action.selected',
+            '&:hover': {
+                backgroundColor: 'action.selected',
+            },
+        },
     } as const,
 
     itemIcon: {
