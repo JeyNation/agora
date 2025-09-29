@@ -14,8 +14,10 @@ export function useResearchHistory() {
         const savedHistory = localStorage.getItem(STORAGE_KEY);
         if (savedHistory) {
             try {
+                // Handle both formats: array and {items: array}
                 const parsed = JSON.parse(savedHistory);
-                setHistory(parsed.items || []);
+                const items = Array.isArray(parsed) ? parsed : (parsed.items || []);
+                setHistory(items);
             } catch (e) {
                 console.error('Failed to parse research history:', e);
                 setHistory([]);
@@ -26,8 +28,7 @@ export function useResearchHistory() {
     // Save history to localStorage
     const saveHistory = useCallback((items: ResearchHistoryItem[]) => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ items }));
-            setHistory(items);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
         } catch (e) {
             console.error('Failed to save research history:', e);
         }
@@ -36,14 +37,18 @@ export function useResearchHistory() {
     // Add a ticker to history
     const addToHistory = useCallback((ticker: string) => {
         setHistory(currentHistory => {
-            // Remove any existing entry for this ticker
-            const filteredHistory = currentHistory.filter(item => item.ticker !== ticker);
+            const uppercaseTicker = ticker.toUpperCase();
+            // Find existing item to preserve pin status
+            const existingItem = currentHistory.find(item => item.ticker === uppercaseTicker);
             
-            // Add new entry at the start
+            // Remove any existing entry for this ticker
+            const filteredHistory = currentHistory.filter(item => item.ticker !== uppercaseTicker);
+            
+            // Add new entry at the start, preserving pin status if it existed
             const newItem: ResearchHistoryItem = {
-                ticker: ticker.toUpperCase(),
+                ticker: uppercaseTicker,
                 timestamp: Date.now(),
-                isPinned: false
+                isPinned: existingItem ? existingItem.isPinned : false
             };
 
             // Put pinned items first, followed by unpinned items sorted by timestamp
@@ -63,16 +68,17 @@ export function useResearchHistory() {
     // Toggle pin status
     const togglePin = useCallback((ticker: string) => {
         setHistory(currentHistory => {
-            const newHistory = currentHistory.map(item => 
-                item.ticker === ticker 
-                    ? { ...item, isPinned: !item.isPinned }
-                    : item
-            ).sort((a, b) => {
+            const newHistory = currentHistory.map(item => {
+                if (item.ticker === ticker) {
+                    return { ...item, isPinned: !item.isPinned };
+                }
+                return item;
+            }).sort((a, b) => {
                 if (a.isPinned && !b.isPinned) return -1;
                 if (!a.isPinned && b.isPinned) return 1;
                 return b.timestamp - a.timestamp;
             });
-
+            
             saveHistory(newHistory);
             return newHistory;
         });

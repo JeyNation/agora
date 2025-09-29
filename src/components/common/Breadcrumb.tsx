@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Breadcrumbs, Link as MuiLink, Typography } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { breadcrumbStyles } from '../../styles/components/breadcrumb';
 
 export type BreadcrumbItem = {
     label: string;
@@ -37,7 +38,7 @@ export default function Breadcrumb({
                         <Typography
                             key={item.label}
                             color={isLast ? 'text.primary' : 'text.secondary'}
-                            fontSize="0.875rem"
+                            sx={breadcrumbStyles.breadcrumbItem}
                         >
                             {item.label}
                         </Typography>
@@ -48,13 +49,13 @@ export default function Breadcrumb({
                     <Link
                         key={item.label}
                         href={item.href}
-                        style={{ textDecoration: 'none' }}
+                        style={breadcrumbStyles.link}
                     >
                         <MuiLink
                             component="span"
                             color="inherit"
                             underline="hover"
-                            sx={{ fontSize: '0.875rem' }}
+                            sx={breadcrumbStyles.breadcrumbItem}
                         >
                             {item.label}
                         </MuiLink>
