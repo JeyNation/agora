@@ -5,7 +5,10 @@ import type { ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
+
+import { modernLightTheme } from '../../styles/theme/theme';
+import '../../styles/theme/vars.css';
 
 import { clientLayout } from '../../styles/layout/client-layout';
 import SideNav from './browser/SideNav';
@@ -64,10 +67,12 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     );
 
     return (
-        <Box sx={clientLayout.container}>
-            <CssBaseline />
-            {isMdUp ? renderDesktopLayout() : renderMobileLayout()}
-        </Box>
+        <ThemeProvider theme={modernLightTheme}>
+            <Box sx={clientLayout.container}>
+                <CssBaseline />
+                {isMdUp ? renderDesktopLayout() : renderMobileLayout()}
+            </Box>
+        </ThemeProvider>
     );
 };
 

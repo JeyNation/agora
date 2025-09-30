@@ -4,8 +4,7 @@ import React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
-import ResearchSearchBar from '../../research/ResearchSearchBar';
-import { SEARCH_BAR_PLACEHOLDER } from '../../../app/constants';
+import { useBreadcrumbs } from '../../../lib/hooks/useBreadcrumbs';
 import { mobileNav } from '../../../styles/components/navigation';
 
 // Types
@@ -16,18 +15,20 @@ type Props = {
 };
 
 import { useRouter } from 'next/navigation';
+import ResearchBar from '@/components/research/ResearchBar';
+import Breadcrumb from '@/components/common/Breadcrumb';
 
 export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Props) {
     const router = useRouter();
 
-	const handleSearch = React.useCallback((query: string) => {
+	const breadcrumbItems = useBreadcrumbs();
+	
+	const handleStockSelect = React.useCallback((ticker: string) => {
 		// Call the original onSearch handler if provided
-		onSearch?.(query);
+		onSearch?.(ticker);
 
         // Navigate to research page with the ticker
-        if (query.trim()) {
-            router.push(`/research?ticker=${encodeURIComponent(query.trim())}`);
-        }
+        router.push(`/research?ticker=${encodeURIComponent(ticker)}`);
 	}, [onSearch, router]);
 
 	return (
@@ -43,11 +44,11 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 					<MenuIcon />
 				</IconButton>
 			</Box>
+            <Box sx={mobileNav.breadcrumbSection}>
+                <Breadcrumb items={breadcrumbItems} />
+            </Box>
 			<Box sx={mobileNav.searchSection}>
-				<ResearchSearchBar 
-					onSearch={handleSearch}
-					placeholder={SEARCH_BAR_PLACEHOLDER}
-				/>
+				<ResearchBar onSelect={handleStockSelect} />
 			</Box>
 		</Box>
 	);

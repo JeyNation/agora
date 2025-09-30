@@ -1,0 +1,26 @@
+:root {
+  --bg: #F6F8FA;
+  --surface: #FFFFFF;
+  --primary: #1E6FFF;
+  --primary-contrast: #FFFFFF;
+  --secondary: #00BFA6;
+  --text-primary: #0F1720;
+  --text-secondary: #6B7280;
+  --muted: #E6E9EE;
+  --success: #28A745;
+  --warning: #FFB020;
+  --error: #E53E3E;
+}
+
+/* Dark mode variables (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0B1220;
+    --surface: #0F1724;
+    --primary: #5FA1FF;
+    --secondary: #2EE1C1;
+    --text-primary: #E6EEF6;
+    --text-secondary: #AAB7C7;
+    --muted: rgba(255,255,255,0.06);
+  }
+}

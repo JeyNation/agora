@@ -3,12 +3,11 @@ import type { SxProps, Theme } from '@mui/material/styles';
 export const researchStyles = {
     // Page Layout
     container: {
-
+		margin: 'auto',
     } as SxProps<Theme>,
 
     panelLayout: {
         display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
 		gap: 3,
     } as SxProps<Theme>,
 

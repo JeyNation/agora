@@ -1,22 +1,19 @@
 @import "tailwindcss";
+@import "./vars.css";
 
 /**
- * Root level theme variables
+ * Root level theme variables (delegated to vars.css)
  */
 :root {
-    --background: #ffffff;
-    --foreground: #171717;
-    
-    /* Add more theme variables as needed */
+    /* fallback legacy variables for components that still read globals */
+    --background: var(--bg);
+    --foreground: var(--text-primary);
 }
 
-/**
- * Dark mode theme variables
- */
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
+        --background: var(--bg);
+        --foreground: var(--text-primary);
     }
 }
 

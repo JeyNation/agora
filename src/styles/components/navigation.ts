@@ -96,7 +96,6 @@ export const mobileNav = {
     drawer: (isExpanded: boolean): SxProps<Theme> => ({
         '& .MuiDrawer-paper': {
             width: '100%',
-            background: 'background.paper',
             borderTop: 0,
             height: '100%',
             maxHeight: isExpanded ? '100vh' : `${HEADER_HEIGHT}px`,
@@ -115,8 +114,8 @@ export const mobileNav = {
         left: 0,
         pl: 1,
         pr: 0,
-        zIndex: 100,
-        backgroundColor: 'background.paper',
+		mt: 1,
+		zIndex: 100,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -125,16 +124,30 @@ export const mobileNav = {
     hamburgerButton: {
         display: 'flex',
         alignItems: 'center',
+		width: `${DRAWER_COLLAPSED_WIDTH}px`
     } as const,
+
+	breadcrumbSection: {
+		display: 'flex',
+		position: 'absolute',
+		left: `${DRAWER_COLLAPSED_WIDTH}px`,
+		alignItems: 'center',
+		px: 2,
+		py: 2,
+		transition: (theme: Theme) => theme.transitions.create('left', {
+			easing: theme.transitions.easing.easeInOut,
+			duration: TRANSITION_DURATION,
+		}),
+	} as const,
 
     searchSection: {
         display: 'flex',
+		position: 'absolute',
+		right: 0,
         alignItems: 'center',
-        flexGrow: 1,
-        ml: 1,
+		justifyContent: 'flex-end',
         px: 1,
         py: 1,
-        width: '100%',
         maxWidth: '300px',
     } as const,
 

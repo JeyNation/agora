@@ -2,10 +2,8 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
-import ResearchSearchBar from '../../research/ResearchSearchBar';
 import Breadcrumb from '../../common/Breadcrumb';
 import { useBreadcrumbs } from '../../../lib/hooks/useBreadcrumbs';
-import { SEARCH_BAR_PLACEHOLDER } from '../../../app/constants';
 import { pageHeader } from '../../../styles/layout/page-header';
 
 // Types
@@ -15,20 +13,19 @@ type Props = {
 };
 
 import { useRouter } from 'next/navigation';
+import ResearchBar from '@/components/research/ResearchBar';
 
 export default function PageHeader({ onSearch, collapsed = false }: Props) {
     const router = useRouter();
 
     const breadcrumbItems = useBreadcrumbs();
     
-    const handleSearch = React.useCallback((query: string) => {
+    const handleStockSelect = React.useCallback((ticker: string) => {
         // Call the original onSearch handler if provided
-        onSearch?.(query);
+        onSearch?.(ticker);
         
         // Navigate to research page with the ticker
-        if (query.trim()) {
-            router.push(`/research?ticker=${encodeURIComponent(query.trim())}`);
-        }
+        router.push(`/research?ticker=${encodeURIComponent(ticker)}`);
     }, [onSearch, router]);
 
     return (
@@ -37,10 +34,7 @@ export default function PageHeader({ onSearch, collapsed = false }: Props) {
                 <Breadcrumb items={breadcrumbItems} />
             </Box>
             <Box sx={pageHeader.searchSection}>
-                <ResearchSearchBar 
-                    onSearch={handleSearch}
-                    placeholder={SEARCH_BAR_PLACEHOLDER}
-                />
+				<ResearchBar onSelect={handleStockSelect} />
             </Box>
         </Box>
     );

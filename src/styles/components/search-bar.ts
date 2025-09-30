@@ -9,9 +9,11 @@ interface SearchBarStyleProps {
 
 /**
  * Search Bar Component Styles
+ * Used by: SearchInput, SuggestionList, and ResearchBar components
  */
 export const searchBar = {
-    container: ({ minWidth, maxWidth }: SearchBarStyleProps): SxProps<Theme> => ({
+    // SearchInput Component Styles
+    inputContainer: ({ minWidth, maxWidth }: SearchBarStyleProps): SxProps<Theme> => ({
         position: 'relative',
         borderRadius: 20,
         width: '100%',
@@ -26,44 +28,64 @@ export const searchBar = {
             borderColor: (theme: Theme) => alpha(theme.palette.text.primary, 0.23),
             backgroundColor: (theme: Theme) => alpha(theme.palette.background.paper, 0.9),
         },
+        '&:focus-within': {
+            borderColor: (theme: Theme) => theme.palette.primary.main,
+            boxShadow: (theme: Theme) => `0 0 0 2px ${alpha(theme.palette.primary.main, 0.1)}`,
+        },
         transition: (theme: Theme) => theme.transitions.create([
             'background-color',
             'border-color',
             'box-shadow',
-            'width',
         ]),
     }),
 
-    searchIcon: {
-        pl: 2,
-		pr: 0,
-        height: '100%',
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
+    input: {
+        width: '100%',
+        padding: '4px 12px',
+        fontSize: '0.875rem',
+        border: 'none',
+        outline: 'none',
+        background: 'transparent',
+        color: 'text.primary',
+        '&::placeholder': {
+            color: 'text.disabled',
+            opacity: 1,
+        },
+        '&:disabled': {
+            color: 'text.disabled',
+            cursor: 'not-allowed',
+        },
+    } as const,
+
+    icon: {
         color: 'text.secondary',
+        fontSize: '1.25rem',
+        mr: 1,
     } as const,
 
-    autocomplete: {
-        flexGrow: 1,
-        '& .MuiInput-root': {
-            padding: '4px 8px',
-        },
-        '& .MuiAutocomplete-input': {
-            padding: '4px 0 !important',
-            fontSize: '0.875rem',
-            '&::placeholder': {
-                color: 'text.disabled',
-                opacity: 1,
-            },
-        },
-        '& .MuiAutocomplete-endAdornment': {
-            right: 8,
-        },
+    // SuggestionList Component Styles
+    suggestionPaper: {
+        borderRadius: '12px',
+        overflow: 'hidden',
+        zIndex: (theme: Theme) => theme.zIndex.modal + 10,
     } as const,
 
-    focused: {
-        borderColor: (theme: Theme) => theme.palette.primary.main,
-        boxShadow: (theme: Theme) => `0 0 0 2px ${alpha(theme.palette.primary.main, 0.1)}`,
-    },
+    suggestionList: {
+        listStyle: 'none',
+        m: 0,
+        p: 0,
+    } as const,
+
+    suggestionItem: {
+        px: 2,
+        py: 1,
+        cursor: 'pointer',
+        transition: (theme: Theme) => theme.transitions.create(['background-color']),
+        '&:hover': { bgcolor: 'action.hover' },
+    } as const,
+
+    suggestionItemActive: {
+        bgcolor: 'action.selected',
+        '&:hover': { bgcolor: 'action.selected' },
+    } as const,
 } as const;

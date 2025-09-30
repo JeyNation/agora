@@ -77,6 +77,8 @@ src/
 2. Use TypeScript for style definitions
 3. Follow MUI's styling patterns and theme usage
 4. Keep responsive styles with their components
+5. Use MUI's `sx` prop for styles when possible
+6. Place the styles in the centralized style files within `styles/components/` or `styles/layout/` as appropriate
 
 ### Component Structure
 1. Use "use client" directive for client components
@@ -97,11 +99,10 @@ src/
 5. Use constants instead of hard-coded values
 
 ### Implementation & Testing
-1. Run `pnpm lint` after implementing any changes to ensure code quality and consistency
-2. Fix any TypeScript errors or ESLint warnings before committing
-3. Test the changes in both development and production modes
-4. Verify changes work across different browsers and screen sizes
-5. Run unit tests if available for the affected components
+1. Fix any TypeScript errors or ESLint warnings before committing
+2. Test the changes in both development and production modes
+3. Verify changes work across different browsers and screen sizes
+4. Run unit tests if available for the affected components
 
 ## Git Conventions
 1. Commits should be atomic and focused

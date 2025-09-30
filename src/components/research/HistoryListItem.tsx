@@ -59,14 +59,16 @@ export default function HistoryListItem({
 						</IconButton>
 					</Tooltip>
 					<Tooltip title="Remove">
-						<IconButton 
+						<IconButton
 							edge="end"
 							onClick={(e) => {
 								e.preventDefault();
 								onRemove(item.ticker);
 							}}
-							sx={{ 
-								...researchStyles.listItemControl
+							sx={{
+								...researchStyles.listItemControl,
+								color: 'inherit',
+								'&:hover': { color: 'error.main' },
 							}}
 						>
 							<DeleteIcon />
