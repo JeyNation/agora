@@ -4,10 +4,12 @@ import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Toast from '../../components/common/Toast';
 import HistoryList from '../../components/research/HistoryList';
 import { useResearchHistory } from '../../lib/hooks/useResearchHistory';
 import { researchStyles } from '../../styles/components';
 import { Tooltip, Typography } from '@mui/material';
+import { searchStocks } from '../../lib/services/stock-search';
 
 export default function ResearchPage() {
     const searchParams = useSearchParams();
@@ -20,13 +22,29 @@ export default function ResearchPage() {
         clearUnpinnedHistory,
         addToHistory
     } = useResearchHistory();
+    const [error, setError] = React.useState<string | null>(null);
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
     // Add to history when ticker is provided
-    React.useEffect(() => {
-        if (ticker) {
-            addToHistory(ticker);
-        }
-    }, [ticker, addToHistory]);
+	// Verify ticker exists in our data before adding to history
+	React.useEffect(() => {
+		if (!ticker) return;
+
+		const results = searchStocks(ticker);
+		if (results.length > 0) {
+			setError(null);
+			addToHistory(ticker);
+		} else {
+			const msg = `${ticker} not found`;
+			setError(msg);
+			setSnackbarOpen(true);
+		}
+	}, [ticker, addToHistory]);
+
+	const handleCloseSnackbar = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+		if (reason === 'clickaway') return;
+		setSnackbarOpen(false);
+	};
 
     // If ticker is provided, show research details
     if (ticker) {
@@ -65,6 +83,7 @@ export default function ResearchPage() {
 					/>
 				</Box>
 			</Box>
+            <Toast open={snackbarOpen} message={error} onClose={handleCloseSnackbar} severity="error" />
         </Box>
     );
 }

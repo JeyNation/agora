@@ -17,6 +17,8 @@ export const searchBar = {
         width: '100%',
         minWidth,
         maxWidth,
+        display: 'flex',
+        alignItems: 'center',
         border: '1px solid',
         borderColor: (theme: Theme) => alpha(theme.palette.text.primary, 0.12),
         backgroundColor: (theme: Theme) => alpha(theme.palette.background.paper, 0.8),
@@ -33,31 +35,30 @@ export const searchBar = {
     }),
 
     searchIcon: {
-        px: 2,
+        pl: 2,
+		pr: 0,
         height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
+        position: 'relative',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
         color: 'text.secondary',
-        right: 0,
-        top: 0,
     } as const,
 
-    inputBase: {
-        width: '100%',
-        '& .MuiInputBase-input': {
-            py: 1,
-            pl: 2,
-            pr: 5,
-            width: '100%',
+    autocomplete: {
+        flexGrow: 1,
+        '& .MuiInput-root': {
+            padding: '4px 8px',
+        },
+        '& .MuiAutocomplete-input': {
+            padding: '4px 0 !important',
             fontSize: '0.875rem',
-            transition: (theme: Theme) => theme.transitions.create('width'),
             '&::placeholder': {
                 color: 'text.disabled',
                 opacity: 1,
             },
+        },
+        '& .MuiAutocomplete-endAdornment': {
+            right: 8,
         },
     } as const,
 

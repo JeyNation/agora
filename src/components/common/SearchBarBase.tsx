@@ -5,44 +5,48 @@ import Box from '@mui/material/Box';
 import SearchIcon from '@mui/icons-material/Search';
 import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
-import Toast from './Toast';
 import { searchBar } from '../../styles/components/search-bar';
 import { createPortal } from 'react-dom';
-import { useStockSearch } from '../../lib/hooks/useStockSearch';
 
-// Types
-type Props = {
-    onSearch?: (query: string) => void;
+export type Suggestion<T = unknown> = T & { ticker: string; companyName?: string };
+
+type Props<T = unknown> = {
+    value: string;
+    onChange: (v: string) => void;
+    onSelect: (item: Suggestion<T>) => void;
+    onSubmit?: (v: string) => void;
+    suggestions: Suggestion<T>[];
+    loading?: boolean;
     placeholder?: string;
     fullWidth?: boolean;
     minWidth?: number | string;
     maxWidth?: number | string;
+    renderSuggestion?: (item: Suggestion<T>, highlighted: boolean) => React.ReactNode;
     className?: string;
 };
 
-export default function SearchBar({ 
-    onSearch, 
-    placeholder = "Search...",
+export default function SearchBarBase<T = unknown>({
+    value,
+    onChange,
+    onSelect,
+    onSubmit,
+    suggestions,
+    loading = false,
+    placeholder = 'Search...',
     fullWidth,
     minWidth,
     maxWidth,
-    className
-}: Props) {
+    renderSuggestion,
+    className,
+}: Props<T>) {
     const [mounted, setMounted] = React.useState(false);
-    const [inputValue, setInputValue] = React.useState('');
-    const { suggestions, loading, searchStocks, validateTicker } = useStockSearch();
-    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-    const [snackbarMsg, setSnackbarMsg] = React.useState<string | null>(null);
     const [showSuggestions, setShowSuggestions] = React.useState(true);
     const [highlightedIndex, setHighlightedIndex] = React.useState<number>(-1);
     const itemRefs = React.useRef<Record<number, HTMLLIElement | null>>({});
-
     const wrapperRef = React.useRef<HTMLDivElement | null>(null);
     const [portalPos, setPortalPos] = React.useState<{ left: number; top: number; width: number } | null>(null);
 
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
+    React.useEffect(() => setMounted(true), []);
 
     React.useEffect(() => {
         if (!wrapperRef.current) return;
@@ -57,26 +61,20 @@ export default function SearchBar({
             window.removeEventListener('resize', update);
             window.removeEventListener('scroll', update, true);
         };
-    }, [suggestions.length, inputValue]);
+    }, [suggestions.length, value]);
 
-    // Hide suggestions when clicking outside input or portal
     React.useEffect(() => {
         const handler = (e: MouseEvent) => {
             const portalEl = document.getElementById('search-suggestions-portal');
             const target = e.target as Node | null;
-            if (wrapperRef.current && wrapperRef.current.contains(target)) {
-                return; // clicked inside wrapper
-            }
-            if (portalEl && portalEl.contains(target)) {
-                return; // clicked inside portal
-            }
+            if (wrapperRef.current && wrapperRef.current.contains(target)) return;
+            if (portalEl && portalEl.contains(target)) return;
             setShowSuggestions(false);
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    // Scroll highlighted item into view when the index changes
     React.useEffect(() => {
         if (highlightedIndex >= 0) {
             const el = itemRefs.current[highlightedIndex];
@@ -86,37 +84,20 @@ export default function SearchBar({
         }
     }, [highlightedIndex]);
 
-    if (!mounted) {
-        return null;
-    }
-
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        if (inputValue.trim()) {
-            (async () => {
-                const q = inputValue.trim();
-                const match = await validateTicker(q);
-                if (match) {
-                    onSearch?.(q);
-                    setInputValue('');
-                    setShowSuggestions(false);
-                    setHighlightedIndex(-1);
-                } else {
-                    setSnackbarMsg(`${q} not found`);
-                    setSnackbarOpen(true);
-                }
-            })();
-        }
-    };
-
+    if (!mounted) return null;
 
     return (
-        <Paper 
+        <Paper
             component="form"
-            onSubmit={handleSubmit}
-            sx={{
-                ...searchBar.container({ fullWidth, minWidth, maxWidth }),
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+                    onSelect(suggestions[highlightedIndex]);
+                    return;
+                }
+                onSubmit?.(value);
             }}
+            sx={{ ...searchBar.container({ fullWidth, minWidth, maxWidth }) }}
             className={className}
             elevation={0}
         >
@@ -125,17 +106,15 @@ export default function SearchBar({
             </Box>
             <Box sx={{ position: 'relative', width: '100%' }} ref={wrapperRef}>
                 <input
-                    value={inputValue}
+                    value={value}
                     onChange={(e) => {
                         const v = e.target.value;
-                        setInputValue(v);
+                        onChange(v);
                         setShowSuggestions(true);
-                        searchStocks(v);
                     }}
                     onFocus={() => {
-                        if (inputValue.trim() !== '') {
+                        if (value.trim() !== '') {
                             setShowSuggestions(true);
-                            searchStocks(inputValue);
                         }
                     }}
                     onKeyDown={(e) => {
@@ -153,31 +132,12 @@ export default function SearchBar({
                         }
                         if (e.key === 'Enter') {
                             e.preventDefault();
-                            // If an item is highlighted, use it immediately
                             if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
-                                const s = suggestions[highlightedIndex];
-                                onSearch?.(s.ticker);
-                                setInputValue('');
-                                setShowSuggestions(false);
-                                setHighlightedIndex(-1);
+                                onSelect(suggestions[highlightedIndex]);
                                 return;
                             }
-
-                            // Otherwise validate the raw input against the API before navigating
-                            if (inputValue.trim()) {
-                                (async () => {
-                                    const q = inputValue.trim();
-                                    const match = await validateTicker(q);
-                                    if (match) {
-                                        onSearch?.(q);
-                                        setInputValue('');
-                                        setShowSuggestions(false);
-                                        setHighlightedIndex(-1);
-                                    } else {
-                                        setSnackbarMsg(`${q} not found`);
-                                        setSnackbarOpen(true);
-                                    }
-                                })();
+                            if (value.trim()) {
+                                onSubmit?.(value);
                             }
                             return;
                         }
@@ -189,14 +149,7 @@ export default function SearchBar({
                     }}
                     placeholder={placeholder}
                     aria-label={placeholder}
-                    style={{
-                        border: 'none',
-                        outline: 'none',
-                        width: '100%',
-                        padding: '8px 12px',
-                        fontSize: '0.95rem',
-                        background: 'transparent',
-                    }}
+                    style={{ border: 'none', outline: 'none', width: '100%', padding: '8px 12px', fontSize: '0.95rem', background: 'transparent' }}
                 />
 
                 {loading && (
@@ -205,39 +158,33 @@ export default function SearchBar({
                     </Box>
                 )}
 
-                {suggestions.length > 0 && inputValue.trim() !== '' && showSuggestions && portalPos && createPortal(
+                {suggestions.length > 0 && value.trim() !== '' && showSuggestions && portalPos && createPortal(
                     <Paper id="search-suggestions-portal" sx={{ position: 'absolute', left: portalPos.left, top: portalPos.top, width: portalPos.width, zIndex: (theme) => theme.zIndex.modal + 10 }} elevation={3}>
                         <Box component="ul" sx={{ listStyle: 'none', m: 0, p: 0 }}>
-                            {suggestions.map((s, idx) => (
+                            {suggestions.map((s, idx) => {
+                                const ticker = (s as Partial<Record<string, unknown>>).ticker as string | undefined;
+                                const companyName = (s as Partial<Record<string, unknown>>).companyName as string | undefined;
+                                return (
                                 <Box
-                                    key={s.ticker}
+                                    key={ticker ?? idx}
                                     component="li"
                                     ref={(el: HTMLLIElement | null) => { itemRefs.current[idx] = el; return; }}
                                     onMouseDown={(e) => {
                                         e.preventDefault();
-                                        onSearch?.(s.ticker);
-                                        setInputValue('');
-                                        setShowSuggestions(false);
-                                        setHighlightedIndex(-1);
+                                        onSelect(s);
                                     }}
                                     onMouseEnter={() => setHighlightedIndex(idx)}
-                                    sx={{
-                                        px: 2,
-                                        py: 1,
-                                        cursor: 'pointer',
-                                        '&:hover': { bgcolor: 'action.hover' },
-                                        bgcolor: highlightedIndex === idx ? 'action.selected' : 'transparent'
-                                    }}
+                                    sx={{ px: 2, py: 1, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' }, bgcolor: highlightedIndex === idx ? 'action.selected' : 'transparent' }}
                                 >
-                                    <strong>{s.ticker}</strong>&nbsp;-&nbsp;{s.companyName}
+                                    {renderSuggestion ? renderSuggestion(s, highlightedIndex === idx) : <><strong>{ticker}</strong>&nbsp;-&nbsp;{companyName}</>}
                                 </Box>
-                            ))}
+                                );
+                            })}
                         </Box>
                     </Paper>,
                     document.body
                 )}
             </Box>
-            <Toast open={snackbarOpen} message={snackbarMsg} onClose={() => setSnackbarOpen(false)} severity="error" />
         </Paper>
     );
 }

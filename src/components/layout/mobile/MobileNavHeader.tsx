@@ -4,7 +4,7 @@ import React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchBar from '../../common/SearchBar';
+import ResearchSearchBar from '../../research/ResearchSearchBar';
 import { SEARCH_BAR_PLACEHOLDER } from '../../../app/constants';
 import { mobileNav } from '../../../styles/components/navigation';
 
@@ -44,7 +44,7 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 				</IconButton>
 			</Box>
 			<Box sx={mobileNav.searchSection}>
-				<SearchBar 
+				<ResearchSearchBar 
 					onSearch={handleSearch}
 					placeholder={SEARCH_BAR_PLACEHOLDER}
 				/>

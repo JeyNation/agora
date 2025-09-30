@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
-import SearchBar from '../../common/SearchBar';
+import ResearchSearchBar from '../../research/ResearchSearchBar';
 import Breadcrumb from '../../common/Breadcrumb';
 import { useBreadcrumbs } from '../../../lib/hooks/useBreadcrumbs';
 import { SEARCH_BAR_PLACEHOLDER } from '../../../app/constants';
@@ -36,12 +36,12 @@ export default function PageHeader({ onSearch, collapsed = false }: Props) {
             <Box sx={pageHeader.breadcrumbSection(collapsed)}>
                 <Breadcrumb items={breadcrumbItems} />
             </Box>
-			<Box sx={pageHeader.searchSection}>
-				<SearchBar 
-					onSearch={handleSearch}
-					placeholder={SEARCH_BAR_PLACEHOLDER}
-				/>
-			</Box>
+            <Box sx={pageHeader.searchSection}>
+                <ResearchSearchBar 
+                    onSearch={handleSearch}
+                    placeholder={SEARCH_BAR_PLACEHOLDER}
+                />
+            </Box>
         </Box>
     );
 }
