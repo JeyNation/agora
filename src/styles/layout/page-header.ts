@@ -23,10 +23,10 @@ export const pageHeader = {
     breadcrumbSection: (collapsed: boolean) => ({
         display: 'flex',
         position: 'absolute',
-        left: (theme: Theme) => ({ 
-            xs: 0, // Mobile: no offset
-            sm: collapsed ? `${DRAWER_COLLAPSED_WIDTH}px` : `${DRAWER_DEFAULT_WIDTH}px`, // Tablet & Desktop: based on drawer state
-        }),
+        left: { 
+            xs: 0,
+            sm: collapsed ? `${DRAWER_COLLAPSED_WIDTH}px` : `${DRAWER_DEFAULT_WIDTH}px`,
+        },
         alignItems: 'center',
         px: 3,
         py: 2,

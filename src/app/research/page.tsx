@@ -3,13 +3,16 @@
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import ResearchHistoryList from '../../components/research/ResearchHistoryList';
+import Button from '@mui/material/Button';
+import HistoryList from '../../components/research/HistoryList';
 import { useResearchHistory } from '../../lib/hooks/useResearchHistory';
+import { researchStyles } from '../../styles/components';
+import { Tooltip, Typography } from '@mui/material';
 
 export default function ResearchPage() {
     const searchParams = useSearchParams();
     const ticker = searchParams.get('ticker')?.toUpperCase();
+
     const { 
         history,
         togglePin,
@@ -28,22 +31,40 @@ export default function ResearchPage() {
     // If ticker is provided, show research details
     if (ticker) {
         return (
-            <Container maxWidth="lg" sx={{ py: 3 }}>
-                Research details for: {ticker}
-                {/* TODO: Add research details components */}
-            </Container>
+            <Box maxWidth="xl" sx={researchStyles.container}>
+                <Typography variant="h6">
+					{ticker}
+				</Typography>
+            </Box>
         );
     }
 
-    // Otherwise show research history
     return (
-        <Container maxWidth="lg" sx={{ py: 3 }}>
-            <ResearchHistoryList 
-                items={history}
-                onTogglePin={togglePin}
-                onRemove={removeFromHistory}
-                onClearUnpinned={clearUnpinnedHistory}
-            />
-        </Container>
+        <Box maxWidth="xl" sx={researchStyles.container}>
+			<Box sx={researchStyles.panelLayout}>
+				<Box sx={researchStyles.panel}>
+					<Box sx={researchStyles.header}>
+						{history.length > 0 && (
+							<Tooltip title="Clear all unpinned history items">
+								<Button
+									size="small"
+									onClick={clearUnpinnedHistory}
+									disabled={!history.some(item => !item.isPinned)}
+									sx={researchStyles.headerControl}
+								>
+									Clear
+								</Button>
+							</Tooltip>
+						)}
+					</Box>
+					<HistoryList 
+						items={history}
+						onTogglePin={togglePin}
+						onRemove={removeFromHistory}
+						onClearUnpinned={clearUnpinnedHistory}
+					/>
+				</Box>
+			</Box>
+        </Box>
     );
 }

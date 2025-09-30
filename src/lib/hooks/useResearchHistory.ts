@@ -1,17 +1,18 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import type { ResearchHistoryItem, ResearchHistory } from '../types/research';
-
-const STORAGE_KEY = 'research_history';
-const MAX_HISTORY_ITEMS = 50;
+import type { ResearchHistoryItem } from '../types/research';
+import { 
+    MAX_HISTORY_ITEMS, 
+    RESEARCH_HISTORY_STORAGE_KEY 
+} from '../../app/constants/research.constants';
 
 export function useResearchHistory() {
     const [history, setHistory] = useState<ResearchHistoryItem[]>([]);
 
     // Load history from localStorage
     useEffect(() => {
-        const savedHistory = localStorage.getItem(STORAGE_KEY);
+        const savedHistory = localStorage.getItem(RESEARCH_HISTORY_STORAGE_KEY);
         if (savedHistory) {
             try {
                 // Handle both formats: array and {items: array}
@@ -28,7 +29,7 @@ export function useResearchHistory() {
     // Save history to localStorage
     const saveHistory = useCallback((items: ResearchHistoryItem[]) => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            localStorage.setItem(RESEARCH_HISTORY_STORAGE_KEY, JSON.stringify(items));
         } catch (e) {
             console.error('Failed to save research history:', e);
         }
@@ -44,21 +45,38 @@ export function useResearchHistory() {
             // Remove any existing entry for this ticker
             const filteredHistory = currentHistory.filter(item => item.ticker !== uppercaseTicker);
             
-            // Add new entry at the start, preserving pin status if it existed
+            // Add new entry at the start, preserving pin status
             const newItem: ResearchHistoryItem = {
                 ticker: uppercaseTicker,
                 timestamp: Date.now(),
-                isPinned: existingItem ? existingItem.isPinned : false
+                isPinned: existingItem ? existingItem.isPinned : false,
             };
 
-            // Put pinned items first, followed by unpinned items sorted by timestamp
-            const newHistory = [newItem, ...filteredHistory]
-                .sort((a, b) => {
-                    if (a.isPinned && !b.isPinned) return -1;
-                    if (!a.isPinned && b.isPinned) return 1;
-                    return b.timestamp - a.timestamp;
-                })
-                .slice(0, MAX_HISTORY_ITEMS);
+            // First, combine new item with filtered history
+            let newHistory = [newItem, ...filteredHistory];
+
+            // Sort items: pinned first, then by timestamp
+            newHistory = newHistory.sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                return b.timestamp - a.timestamp;
+            });
+
+            // If we have more than MAX_HISTORY_ITEMS, remove oldest unpinned items
+            if (newHistory.length > MAX_HISTORY_ITEMS) {
+                // Keep all pinned items
+                const pinnedItems = newHistory.filter(item => item.isPinned);
+                const unpinnedItems = newHistory.filter(item => !item.isPinned);
+                
+                // Calculate how many unpinned items we can keep
+                const remainingSlots = MAX_HISTORY_ITEMS - pinnedItems.length;
+                
+                // Take the most recent unpinned items up to remainingSlots
+                const keptUnpinnedItems = unpinnedItems.slice(0, Math.max(0, remainingSlots));
+                
+                // Combine pinned and kept unpinned items
+                newHistory = [...pinnedItems, ...keptUnpinnedItems];
+            }
 
             saveHistory(newHistory);
             return newHistory;
@@ -107,6 +125,6 @@ export function useResearchHistory() {
         addToHistory,
         togglePin,
         removeFromHistory,
-        clearUnpinnedHistory
+        clearUnpinnedHistory,
     };
 }

@@ -7,3 +7,6 @@ export interface ResearchHistoryItem {
 export interface ResearchHistory {
     items: ResearchHistoryItem[];
 }
+
+export type SortDirection = 'asc' | 'desc';
+export type SortField = 'ticker' | 'addedAt' | 'priority';

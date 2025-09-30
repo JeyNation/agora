@@ -1,7 +1,42 @@
-import { SxProps, Theme } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
 
-export const researchHistoryStyles = {
-    listItem: {
+export const researchStyles = {
+    // Page Layout
+    container: {
+
+    } as SxProps<Theme>,
+
+    panelLayout: {
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+		gap: 3,
+    } as SxProps<Theme>,
+
+    panel: {
+        flex: 1,
+    } as SxProps<Theme>,
+
+    emptyState: {
+        py: 4, 
+        textAlign: 'center'
+    } as SxProps<Theme>,
+
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        mb: 2,
+        justifyContent: 'space-between',
+    } as SxProps<Theme>,
+
+	headerControl: {
+		marginLeft: 'auto',
+	} as SxProps<Theme>,
+
+    list: {
+        p: 0,
+    } as SxProps<Theme>,
+
+	listItem: {
         textDecoration: 'none',
         color: 'inherit',
         transition: 'transform 0.3s ease, background-color 0.2s ease',
@@ -14,15 +49,28 @@ export const researchHistoryStyles = {
         '&.moving-down': {
             animation: 'moveDown 0.3s ease-in-out'
         }
-    } as SxProps<Theme>,
+	} as SxProps<Theme>,
 
-    listItemContent: {
+	listItemContent: {
         position: 'relative',
         width: '100%',
         display: 'flex',
         alignItems: 'center'
-    } as SxProps<Theme>,
+	} as SxProps<Theme>,
 
+	listItemControl: {
+		mr: 1,
+	} as SxProps<Theme>,
+
+	pagination: {
+		mt: 2,
+		width: '100%',
+		alignItems: 'center',
+		justifyContent: 'center',
+		display: 'flex',
+	} as SxProps<Theme>,
+
+    // Shared
     globalStyles: `
         @keyframes moveUp {
             from {
@@ -54,4 +102,4 @@ export const researchHistoryStyles = {
             }
         }
     `
-};
+} as const;
