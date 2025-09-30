@@ -151,6 +151,10 @@ export const mobileNav = {
         maxWidth: '300px',
     } as const,
 
+	searchDialog: {
+		p: 1,
+	} as const,
+
     content: (isExpanded: boolean): SxProps<Theme> => ({
         opacity: isExpanded ? 1 : 0,
         transition: (theme: Theme) => theme.transitions.create(['opacity'], {

@@ -4,6 +4,9 @@ import React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
+import Dialog from '@mui/material/Dialog';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useBreadcrumbs } from '../../../lib/hooks/useBreadcrumbs';
 import { mobileNav } from '../../../styles/components/navigation';
 
@@ -17,9 +20,12 @@ type Props = {
 import { useRouter } from 'next/navigation';
 import ResearchBar from '@/components/research/ResearchBar';
 import Breadcrumb from '@/components/common/Breadcrumb';
+import SearchButton from '@/components/common/SearchButton';
 
 export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Props) {
-    const router = useRouter();
+	const router = useRouter();
+	const isSmall = useMediaQuery('(max-width:499px)');
+	const [openSearch, setOpenSearch] = React.useState(false);
 
 	const breadcrumbItems = useBreadcrumbs();
 	
@@ -44,12 +50,30 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 					<MenuIcon />
 				</IconButton>
 			</Box>
-            <Box sx={mobileNav.breadcrumbSection}>
-                <Breadcrumb items={breadcrumbItems} />
-            </Box>
-			<Box sx={mobileNav.searchSection}>
-				<ResearchBar onSelect={handleStockSelect} />
+
+			<Box sx={mobileNav.breadcrumbSection}>
+				<Breadcrumb items={breadcrumbItems} />
 			</Box>
+
+			<Box sx={mobileNav.searchSection}>
+				{isSmall ? (
+					<SearchButton onSelect={() => setOpenSearch(true)} />
+				) : (
+					<ResearchBar onSelect={handleStockSelect} />
+				)}
+			</Box>
+
+			{/* Full-screen search dialog for small screens */}
+			<Dialog fullScreen open={openSearch} onClose={() => setOpenSearch(false)}>
+				<ClickAwayListener onClickAway={() => setOpenSearch(false)}>
+					<Box sx={mobileNav.searchDialog}>
+						<ResearchBar onSelect={(ticker) => {
+							setOpenSearch(false);
+							handleStockSelect(ticker);
+						}} fullWidth autoFocus />
+					</Box>
+				</ClickAwayListener>
+			</Dialog>
 		</Box>
 	);
 }

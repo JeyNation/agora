@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Paper, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { searchBar } from '../../styles/components/search-bar';
+import { searchBar } from '../../styles/components';
 
 export interface SuggestionItem {
   id: string | number;
@@ -90,9 +90,9 @@ export default function SuggestionList({
     if (!isOpen) return null;
     
     return (
-      <Paper sx={{ ...searchBar.suggestionPaper, maxHeight }} data-testid={testId}>
-        <List sx={searchBar.suggestionList}>
-          <ListItem sx={searchBar.suggestionItem}>
+      <Paper sx={{ ...searchBar.suggestion.container, maxHeight }} data-testid={testId}>
+        <List sx={searchBar.suggestion.list}>
+          <ListItem sx={searchBar.suggestion.listItem}>
             <ListItemText
               primary={
                 <Typography variant="body2" color="text.secondary">
@@ -109,20 +109,20 @@ export default function SuggestionList({
   return (
     <Paper
       sx={{
-        ...searchBar.suggestionPaper,
+        ...searchBar.suggestion.container,
         maxHeight,
         overflow: 'auto',
       }}
       data-testid={testId}
     >
-      <List ref={listRef} sx={searchBar.suggestionList}>
+      <List ref={listRef} sx={searchBar.suggestion.list}>
         {suggestions.map((item, index) => (
           <ListItem
             key={item.id}
             ref={index === activeIndex ? activeItemRef : null}
             sx={{
-              ...searchBar.suggestionItem,
-              ...(index === activeIndex ? searchBar.suggestionItemActive : {}),
+              ...searchBar.suggestion.listItem,
+              ...(index === activeIndex ? searchBar.suggestion.listItemActive : {}),
             }}
             onClick={() => onSelect(item)}
             onMouseEnter={() => onActiveIndexChange(index)}

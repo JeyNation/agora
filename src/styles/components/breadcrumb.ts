@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { SxProps, Theme } from '@mui/material';
 
 export const breadcrumbStyles = {
@@ -11,5 +12,5 @@ export const breadcrumbStyles = {
     
     link: {
         textDecoration: 'none'
-    } as React.CSSProperties
+    } as CSSProperties
 };

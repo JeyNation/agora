@@ -10,6 +10,7 @@ import type { StockInfo } from "../../lib/types/stock";
 interface ResearchBarProps {
   onSelect?: (ticker: string, stockInfo: StockInfo) => void;
   placeholder?: string;
+  autoFocus?: boolean;
   fullWidth?: boolean;
   minWidth?: number | string;
   maxWidth?: number | string;
@@ -19,6 +20,7 @@ interface ResearchBarProps {
 export default function ResearchBar({
   onSelect,
   placeholder = 'Search stocks...',
+  autoFocus = false,
   fullWidth = false,
   minWidth,
   maxWidth,
@@ -53,6 +55,7 @@ export default function ResearchBar({
   // Handle input change
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
+
     setQuery(value);
     setActiveIndex(-1);
     
@@ -82,6 +85,8 @@ export default function ResearchBar({
     }
   }, [stockSuggestions, onSelect]);
 
+  // Note: Enter key handling reverted to previous behavior (no exact-match validation here).
+
   // Handle active index change
   const handleActiveIndexChange = useCallback((index: number) => {
     setActiveIndex(index);
@@ -104,12 +109,13 @@ export default function ResearchBar({
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
-      <Box sx={{ position: 'relative', width: fullWidth ? '100%' : 'auto' }}>
+      <Box sx={{ position: 'relative', width: fullWidth ? '100%' : 'auto', }}>
         <Box ref={searchInputRef}>
           <SearchInput
             value={query}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
+            autoFocus={autoFocus}
             placeholder={placeholder}
             fullWidth={fullWidth}
             minWidth={minWidth}

@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 // d3 is dynamically imported inside the effect to avoid adding it to the initial bundle
@@ -72,10 +72,10 @@ export default function LineChart({
     timeRange = 'day'
 }: LineChartProps) {
     const theme = useTheme();
-    const svgRef = React.useRef<SVGSVGElement>(null);
+    const svgRef = useRef<SVGSVGElement>(null);
     const data = propData ?? generateDummyData(timeRange);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!svgRef.current || !data.length) return;
 
         let mounted = true;
@@ -187,7 +187,7 @@ export default function LineChart({
         <Box sx={lineChart.container}>
             <svg 
                 ref={svgRef}
-                style={lineChart.svg as React.CSSProperties}
+                style={lineChart.svg as CSSProperties}
                 width={width}
                 height={height}
             />

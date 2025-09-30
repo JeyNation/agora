@@ -3,7 +3,7 @@
 import React from 'react';
 import { Box, InputBase, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { searchBar } from '../../styles/components/search-bar';
+import { searchBar } from '../../styles/components';
 
 interface SearchInputProps {
   placeholder?: string;
@@ -33,7 +33,7 @@ export default function SearchInput({
   'data-testid': testId,
 }: SearchInputProps) {
   return (
-    <Box sx={searchBar.inputContainer({ fullWidth, minWidth, maxWidth })}>
+    <Box sx={searchBar.input.container({ fullWidth, minWidth, maxWidth })}>
       <InputBase
         placeholder={placeholder}
         value={value}
@@ -43,10 +43,10 @@ export default function SearchInput({
         disabled={disabled}
         autoFocus={autoFocus}
         data-testid={testId}
-        sx={searchBar.input}
+        sx={searchBar.input.base}
         endAdornment={
           <InputAdornment position="end">
-            <SearchIcon sx={searchBar.icon} />
+            <SearchIcon sx={searchBar.input.icon} />
           </InputAdornment>
         }
         inputProps={{

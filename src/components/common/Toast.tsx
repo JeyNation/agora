@@ -3,6 +3,7 @@
 import React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { messageStyles } from '@/styles/components/message';
 
 type ToastProps = {
     open: boolean;
@@ -19,7 +20,7 @@ export default function Toast({ open, message, severity = 'error', autoHideDurat
             autoHideDuration={autoHideDuration}
             onClose={onClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            sx={{ zIndex: 13000, mb: 2 }}
+            sx={messageStyles.snackbar}
         >
             <Alert onClose={onClose} severity={severity} sx={{ width: '100%', zIndex: 13001 }}>
                 {message}

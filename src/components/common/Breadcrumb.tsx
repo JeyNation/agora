@@ -1,10 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import { Breadcrumbs, Link as MuiLink, Typography } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { breadcrumbStyles } from '../../styles/components/breadcrumb';
+import { breadcrumbStyles } from '../../styles/components';
 
 export type BreadcrumbItem = {
     label: string;
@@ -13,7 +13,7 @@ export type BreadcrumbItem = {
 
 interface BreadcrumbProps {
     items: BreadcrumbItem[];
-    separator?: React.ReactNode;
+    separator?: ReactNode;
     maxItems?: number;
 }
 
