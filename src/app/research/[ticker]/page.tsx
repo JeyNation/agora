@@ -11,6 +11,7 @@ import Toast from '../../../components/common/Toast';
 import LineChart from '../../../components/charts/LineChart';
 import { searchStocks } from '../../../lib/services/stock-search';
 import { tickerStyles } from '../../../styles/components';
+import type { StockInfo } from '../../../lib/types/stock';
 import { useResearchHistory } from '@/lib/hooks/useResearchHistory';
 
 interface StockMetric {
@@ -37,7 +38,7 @@ export default function TickerPage() {
 	
     const [error, setError] = React.useState<string | null>(null);
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-    const [stockData, setStockData] = React.useState<any>(null);
+    const [stockData, setStockData] = React.useState<StockInfo | null>(null);
 
     const mockMetrics: StockMetric[] = [
         { label: 'P/E Ratio (TTM)', value: '28.5' },
@@ -73,7 +74,7 @@ export default function TickerPage() {
             setError(msg);
             setSnackbarOpen(true);
         }
-    }, [ticker]);
+    }, [ticker, addToHistory]);
 
     const handleCloseSnackbar = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') return;
@@ -110,7 +111,7 @@ export default function TickerPage() {
                             {ticker}
                         </Typography>
                         <Typography variant="h6" sx={tickerStyles.companyName}>
-                            {stockData?.name || 'Company Name'}
+                            {stockData?.companyName || 'Company Name'}
                         </Typography>
                     </Box>
                     <Box sx={tickerStyles.priceInfo}>

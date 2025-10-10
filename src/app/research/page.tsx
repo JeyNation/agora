@@ -14,7 +14,7 @@ export default function ResearchPage() {
         history,
         togglePin,
         removeFromHistory,
-        clearUnpinnedHistory
+        clearUnpinnedHistory,
     } = useResearchHistory();
 
     return (
