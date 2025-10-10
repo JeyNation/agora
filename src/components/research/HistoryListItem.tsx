@@ -29,7 +29,7 @@ export default function HistoryListItem({
     return (
         <ListItem
             component={Link}
-            href={`/research?ticker=${item.ticker}`}
+            href={`/research/${item.ticker.toLowerCase()}`}
             className={isMoving ? `moving-${isMoving}` : ''}
             sx={researchStyles.listItem}
         >

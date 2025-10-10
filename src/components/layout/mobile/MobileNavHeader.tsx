@@ -34,7 +34,7 @@ export default function MobileNavHeader({ isExpanded, onToggle, onSearch }: Prop
 		onSearch?.(ticker);
 
         // Navigate to research page with the ticker
-        router.push(`/research?ticker=${encodeURIComponent(ticker)}`);
+        router.push(`/research/${encodeURIComponent(ticker)}`);
 	}, [onSearch, router]);
 
 	return (

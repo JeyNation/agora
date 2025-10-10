@@ -82,6 +82,7 @@ export default function ResearchBar({
     // Call parent callback with selected ticker and stock info
     if (selectedStock) {
       onSelect?.(item.value, selectedStock);
+	  setQuery(''); // Clear input after selection
     }
   }, [stockSuggestions, onSelect]);
 
