@@ -42,7 +42,6 @@ export default function ChartShowcase() {
                             formatX={dateFormatter}
                             formatY={currencyFormatter}
                             showDots={true}
-                            showGrid={true}
                             animate={true}
                             strokeWidth={2}
                             onHover={(data) => {
@@ -68,7 +67,6 @@ export default function ChartShowcase() {
                             xAxisLabel="Time (hours)"
                             yAxisLabel="Temperature (°C)"
                             showDots={true}
-                            showGrid={true}
                             animate={true}
                             lineColor="#ff6b35"
                             strokeWidth={3}
@@ -93,7 +91,6 @@ export default function ChartShowcase() {
                             yAxisLabel="Sales (%)"
                             formatY={percentageFormatter}
                             showDots={true}
-                            showGrid={true}
                             animate={true}
                             lineColor="#4caf50"
                             strokeWidth={2}
@@ -117,7 +114,6 @@ export default function ChartShowcase() {
                             yAxisLabel="Revenue"
                             formatY={millionsFormatter}
                             showDots={true}
-                            showGrid={true}
                             animate={true}
                             lineColor="#9c27b0"
                             strokeWidth={2}

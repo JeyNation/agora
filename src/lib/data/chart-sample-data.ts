@@ -2,26 +2,37 @@ import type { DataPoint } from '../../components/charts/LineChart';
 
 // Sample stock price data for demonstration
 export const SAMPLE_STOCK_DATA: DataPoint[] = [
-    { x: new Date('2024-01-01'), y: 150.25 },
-    { x: new Date('2024-01-02'), y: 152.80 },
-    { x: new Date('2024-01-03'), y: 148.90 },
-    { x: new Date('2024-01-04'), y: 155.20 },
-    { x: new Date('2024-01-05'), y: 159.75 },
-    { x: new Date('2024-01-08'), y: 162.30 },
-    { x: new Date('2024-01-09'), y: 158.95 },
-    { x: new Date('2024-01-10'), y: 164.50 },
-    { x: new Date('2024-01-11'), y: 167.80 },
-    { x: new Date('2024-01-12'), y: 165.40 },
-    { x: new Date('2024-01-16'), y: 169.25 },
-    { x: new Date('2024-01-17'), y: 171.90 },
-    { x: new Date('2024-01-18'), y: 174.30 },
-    { x: new Date('2024-01-19'), y: 172.85 },
-    { x: new Date('2024-01-22'), y: 178.20 },
-    { x: new Date('2024-01-23'), y: 180.75 },
-    { x: new Date('2024-01-24'), y: 177.60 },
-    { x: new Date('2024-01-25'), y: 182.40 },
-    { x: new Date('2024-01-26'), y: 185.90 },
-    { x: new Date('2024-01-29'), y: 183.25 },
+    { x: new Date('2024-01-01T12:00:00Z'), y: 150.25 },
+    { x: new Date('2024-01-02T12:00:00Z'), y: 152.80 },
+    { x: new Date('2024-01-03T12:00:00Z'), y: 148.90 },
+    { x: new Date('2024-01-04T12:00:00Z'), y: 155.20 },
+    { x: new Date('2024-01-05T12:00:00Z'), y: 159.75 },
+    { x: new Date('2024-01-06T12:00:00Z'), y: 159.75 },
+    { x: new Date('2024-01-07T12:00:00Z'), y: 159.75 },
+    { x: new Date('2024-01-08T12:00:00Z'), y: 162.30 },
+    { x: new Date('2024-01-09T12:00:00Z'), y: 158.95 },
+    { x: new Date('2024-01-10T12:00:00Z'), y: 164.50 },
+    { x: new Date('2024-01-11T12:00:00Z'), y: 167.80 },
+    { x: new Date('2024-01-12T12:00:00Z'), y: 169.95 },
+    { x: new Date('2024-01-13T12:00:00Z'), y: 169.95 },
+    { x: new Date('2024-01-14T12:00:00Z'), y: 169.95 },
+    { x: new Date('2024-01-15T12:00:00Z'), y: 172.40 },
+    { x: new Date('2024-01-16T12:00:00Z'), y: 175.25 },
+    { x: new Date('2024-01-17T12:00:00Z'), y: 178.90 },
+    { x: new Date('2024-01-18T12:00:00Z'), y: 181.30 },
+    { x: new Date('2024-01-19T12:00:00Z'), y: 184.85 },
+    { x: new Date('2024-01-20T12:00:00Z'), y: 188.40 },
+    { x: new Date('2024-01-21T12:00:00Z'), y: 188.40 },
+    { x: new Date('2024-01-22T12:00:00Z'), y: 192.20 },
+    { x: new Date('2024-01-23T12:00:00Z'), y: 195.75 },
+    { x: new Date('2024-01-24T12:00:00Z'), y: 197.60 },
+    { x: new Date('2024-01-25T12:00:00Z'), y: 201.40 },
+    { x: new Date('2024-01-26T12:00:00Z'), y: 205.90 },
+    { x: new Date('2024-01-27T12:00:00Z'), y: 205.90 },
+    { x: new Date('2024-01-28T12:00:00Z'), y: 205.90 },
+    { x: new Date('2024-01-29T12:00:00Z'), y: 208.25 },
+    { x: new Date('2024-01-30T12:00:00Z'), y: 212.25 },
+    { x: new Date('2024-01-31T12:00:00Z'), y: 215.50 },
 ];
 
 // Sample linear data
@@ -77,8 +88,14 @@ export const millionsFormatter = (value: number): string => {
 };
 
 export const dateFormatter = (value: unknown): string => {
-    return new Date(value as string | number | Date).toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric' 
-    });
+    const date = value instanceof Date ? value : new Date(value as string | number);
+    
+    // Use UTC methods to avoid timezone issues
+    const month = date.getUTCMonth();
+    const day = date.getUTCDate();
+    
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    return `${monthNames[month]} ${day}`;
 };

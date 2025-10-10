@@ -42,7 +42,6 @@ export default function ResponsiveChartsPage() {
                         formatX={dateFormatter}
                         formatY={currencyFormatter}
                         showDots={true}
-                        showGrid={true}
                         animate={true}
                     />
                 </Box>
@@ -62,7 +61,6 @@ export default function ResponsiveChartsPage() {
                         xAxisLabel="Time (hours)"
                         yAxisLabel="Temperature (°C)"
                         showDots={true}
-                        showGrid={true}
                         animate={true}
                         lineColor="#ff6b35"
                         strokeWidth={3}
@@ -142,7 +140,6 @@ export default function ResponsiveChartsPage() {
                         formatX={dateFormatter}
                         formatY={currencyFormatter}
                         showDots={true}
-                        showGrid={true}
                         animate={true}
                         lineColor="#9c27b0"
                     />
@@ -167,7 +164,6 @@ export default function ResponsiveChartsPage() {
                         xAxisLabel="X Axis"
                         yAxisLabel="Y Axis"
                         showDots={true}
-                        showGrid={true}
                         animate={true}
                         lineColor="#ff9800"
                         strokeWidth={2}

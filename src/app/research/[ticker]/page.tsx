@@ -14,6 +14,7 @@ import { tickerStyles } from '../../../styles/components';
 import type { StockInfo } from '../../../lib/types/stock';
 import { SAMPLE_STOCK_DATA, currencyFormatter, dateFormatter } from '../../../lib/data/chart-sample-data';
 import { useResearchHistory } from '@/lib/hooks/useResearchHistory';
+import type { HighlightRange } from '../../../components/charts/LineChart';
 
 interface StockMetric {
     label: string;
@@ -29,6 +30,77 @@ interface FinancialData {
     freeCashFlow: string;
 }
 
+// Function to calculate weekend ranges within a given date range
+function calculateWeekendRanges(startDate: Date, endDate: Date): HighlightRange[] {
+    const weekends: HighlightRange[] = [];
+    const current = new Date(startDate);
+    
+    while (current <= endDate) {
+        const dayOfWeek = current.getDay(); // 0 = Sunday, 6 = Saturday
+        
+        if (dayOfWeek === 6) { // Saturday
+            const weekendStart = new Date(current);
+			weekendStart.setHours(0, 0, 0, 0); // Start of Saturday	
+
+            const weekendEnd = new Date(current);
+            weekendEnd.setDate(weekendEnd.getDate() + 1); // Sunday
+            weekendEnd.setHours(23, 59, 59, 999); // End of Sunday
+            
+            // Only add if weekend end is within our date range
+            if (weekendEnd <= endDate) {
+                weekends.push({
+                    start: weekendStart,
+                    end: weekendEnd,
+                    color: '#f5f5f5',
+                    opacity: 0.4
+                });
+            } else if (weekendStart <= endDate) {
+                // Partial weekend at the end of range
+                weekends.push({
+                    start: weekendStart,
+                    end: endDate,
+                    color: '#f5f5f5',
+                    opacity: 0.4
+                });
+            }
+            
+            // Skip to Monday
+            current.setDate(current.getDate() + 2);
+        } else if (dayOfWeek === 0) { // Sunday
+            const weekendStart = new Date(current);
+            weekendStart.setDate(weekendStart.getDate() - 1); // Saturday
+            const weekendEnd = new Date(current);
+            weekendEnd.setHours(23, 59, 59, 999);
+            
+            // Only add if weekend start is within our date range
+            if (weekendStart >= startDate) {
+                weekends.push({
+                    start: weekendStart,
+                    end: weekendEnd,
+                    color: '#f5f5f5',
+                    opacity: 0.4
+                });
+            } else if (weekendEnd >= startDate) {
+                // Partial weekend at the start of range
+                weekends.push({
+                    start: startDate,
+                    end: weekendEnd,
+                    color: '#f5f5f5',
+                    opacity: 0.4
+                });
+            }
+            
+            // Move to next day
+            current.setDate(current.getDate() + 1);
+        } else {
+            // Weekday, move to next day
+            current.setDate(current.getDate() + 1);
+        }
+    }
+    
+    return weekends;
+}
+
 export default function TickerPage() {
     const params = useParams();
     const ticker = (params.ticker as string)?.toUpperCase();
@@ -40,6 +112,15 @@ export default function TickerPage() {
     const [error, setError] = React.useState<string | null>(null);
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [stockData, setStockData] = React.useState<StockInfo | null>(null);
+
+    // Define chart domain and calculate weekend ranges
+    const chartXDomain: [Date, Date] = [new Date('2024-01-01'), new Date('2024-01-31')];
+    const weekendRanges = React.useMemo(() => 
+        calculateWeekendRanges(chartXDomain[0], chartXDomain[1]), 
+        [chartXDomain[0], chartXDomain[1]]
+    );
+
+	console.log('Weekend Ranges:', weekendRanges);
 
     const mockMetrics: StockMetric[] = [
         { label: 'P/E Ratio (TTM)', value: '28.5' },
@@ -142,18 +223,15 @@ export default function TickerPage() {
                                         width="100%"
                                         height="100%"
                                         xAxisType="time"
-                                        xAxisLabel="Date"
-                                        yAxisLabel="Price"
+                                        xDomain={chartXDomain}
+                                        xHighlightRanges={weekendRanges}
                                         formatX={dateFormatter}
                                         formatY={currencyFormatter}
                                         showDots={true}
-                                        showGrid={true}
+                                        showXGrid={true}
+                                        showYGrid={false}
                                         animate={true}
-                                        onHover={(data) => {
-                                            if (data) {
-                                                console.log(`Price on ${new Date(data.x).toLocaleDateString()}: ${currencyFormatter(data.y)}`);
-                                            }
-                                        }}
+                                        showTooltip={true}
                                     />
                                 </Box>
                             </CardContent>

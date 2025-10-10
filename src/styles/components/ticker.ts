@@ -91,7 +91,6 @@ export const tickerStyles = {
         height: 400,
         width: '100%',
         mt: 2,
-		border: '1px dashed #ccc',
     } as SxProps<Theme>,
 
     metricsCard: {
