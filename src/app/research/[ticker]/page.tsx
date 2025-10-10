@@ -12,6 +12,7 @@ import LineChart from '../../../components/charts/LineChart';
 import { searchStocks } from '../../../lib/services/stock-search';
 import { tickerStyles } from '../../../styles/components';
 import type { StockInfo } from '../../../lib/types/stock';
+import { SAMPLE_STOCK_DATA, currencyFormatter, dateFormatter } from '../../../lib/data/chart-sample-data';
 import { useResearchHistory } from '@/lib/hooks/useResearchHistory';
 
 interface StockMetric {
@@ -136,7 +137,24 @@ export default function TickerPage() {
                                     Stock Performance
                                 </Typography>
                                 <Box sx={tickerStyles.chartContainer}>
-                                    <LineChart />
+                                    <LineChart
+                                        data={SAMPLE_STOCK_DATA}
+                                        width="100%"
+                                        height="100%"
+                                        xAxisType="time"
+                                        xAxisLabel="Date"
+                                        yAxisLabel="Price"
+                                        formatX={dateFormatter}
+                                        formatY={currencyFormatter}
+                                        showDots={true}
+                                        showGrid={true}
+                                        animate={true}
+                                        onHover={(data) => {
+                                            if (data) {
+                                                console.log(`Price on ${new Date(data.x).toLocaleDateString()}: ${currencyFormatter(data.y)}`);
+                                            }
+                                        }}
+                                    />
                                 </Box>
                             </CardContent>
                         </Card>
