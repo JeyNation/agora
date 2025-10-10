@@ -114,13 +114,13 @@ export default function TickerPage() {
     const [stockData, setStockData] = React.useState<StockInfo | null>(null);
 
     // Define chart domain and calculate weekend ranges
-    const chartXDomain: [Date, Date] = [new Date('2024-01-01'), new Date('2024-01-31')];
+    const chartXDomain: [Date, Date] = [new Date('2024-01-01'), new Date('2024-02-01')];
+    const chartStartDate = chartXDomain[0];
+    const chartEndDate = chartXDomain[1];
     const weekendRanges = React.useMemo(() => 
-        calculateWeekendRanges(chartXDomain[0], chartXDomain[1]), 
-        [chartXDomain[0], chartXDomain[1]]
+        calculateWeekendRanges(chartStartDate, chartEndDate), 
+        [chartStartDate, chartEndDate]
     );
-
-	console.log('Weekend Ranges:', weekendRanges);
 
     const mockMetrics: StockMetric[] = [
         { label: 'P/E Ratio (TTM)', value: '28.5' },
