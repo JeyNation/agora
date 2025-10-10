@@ -14,7 +14,7 @@ import {
     currencyFormatter,
     dateFormatter,
     percentageFormatter
-} from '../../lib/data/chart-sample-data';
+} from '../../lib/data/chartSampleData';
 
 export default function ResponsiveChartsPage() {
     return (

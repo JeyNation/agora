@@ -4,7 +4,7 @@ import {
     DRAWER_DEFAULT_WIDTH, 
     DRAWER_COLLAPSED_WIDTH,
     TRANSITION_DURATION 
-} from '../../app/constants/navigation.constants';
+} from '../../app/constants/navigationConstants';
 
 /**
  * Page Header styles

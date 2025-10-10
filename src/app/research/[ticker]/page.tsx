@@ -12,7 +12,7 @@ import LineChart from '../../../components/charts/LineChart';
 import { searchStocks } from '../../../lib/services/stock-search';
 import { tickerStyles } from '../../../styles/components';
 import type { StockInfo } from '../../../lib/types/stock';
-import { SAMPLE_STOCK_DATA, currencyFormatter, dateFormatter } from '../../../lib/data/chart-sample-data';
+import { SAMPLE_STOCK_DATA, currencyFormatter, dateFormatter } from '../../../lib/data/chartSampleData';
 import { useResearchHistory } from '@/lib/hooks/useResearchHistory';
 import type { HighlightRange } from '../../../components/charts/LineChart';
 

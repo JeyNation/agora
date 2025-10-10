@@ -48,13 +48,13 @@ src/
 ### Constants
 1. Keep constants in the `app/constants/` directory
 2. Group constants by feature (e.g., layout, navigation, searchbar)
-3. Use descriptive names for constant files (e.g., `navigation.constants.ts`)
+3. Use descriptive names for constant files (e.g., `navigationConstants.ts`)
 
 ### Naming Conventions
 1. Component files: PascalCase (e.g., `SearchBar.tsx`)
 2. Style files: kebab-case (e.g., `search-bar.ts`)
 3. Constant files: camelCase (e.g., `navigationConstants.ts`)
-4. Utility files: camelCase (e.g., `formatDate.ts`)
+4. Utility files: camelCase (e.g., `chartScales.ts`, `formatDate.ts`)
 
 ### Import Rules
 1. Use relative imports for components and styles

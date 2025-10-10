@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
-import { DataPoint, HighlightRange } from './chart-drawing';
-import { XAxisType } from './chart-scales';
+import { DataPoint, HighlightRange } from './chartDrawing';
+import { XAxisType } from './chartScales';
 
 /**
  * Process X highlight ranges into renderable format

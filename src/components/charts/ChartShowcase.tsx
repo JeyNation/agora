@@ -16,7 +16,7 @@ import {
     percentageFormatter,
     millionsFormatter,
     dateFormatter
-} from '../../lib/data/chart-sample-data';
+} from '../../lib/data/chartSampleData';
 
 export default function ChartShowcase() {
     return (

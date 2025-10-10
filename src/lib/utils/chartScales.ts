@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { DataPoint } from './chart-drawing';
+import { DataPoint } from './chartDrawing';
 
 export type XAxisType = 'linear' | 'time' | 'band';
 export type YAxisType = 'linear' | 'log';

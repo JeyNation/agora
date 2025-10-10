@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import * as d3 from 'd3';
-import { createScales, type XAxisType, type YAxisType } from '../utils/chart-scales';
+import { createScales, type XAxisType, type YAxisType } from '../utils/chartScales';
 import { type DataPoint } from '../utils';
 
 export interface UseChartScalesOptions {

@@ -5,7 +5,7 @@ import type { ResearchHistoryItem } from '../types/research';
 import { 
     MAX_HISTORY_ITEMS, 
     RESEARCH_HISTORY_STORAGE_KEY 
-} from '../../app/constants/research.constants';
+} from '../../app/constants/researchConstants';
 
 export function useResearchHistory() {
     const [history, setHistory] = useState<ResearchHistoryItem[]>([]);

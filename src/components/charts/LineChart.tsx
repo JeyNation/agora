@@ -22,12 +22,12 @@ import {
     type LineConfig,
     type DotsConfig
 } from '../../lib/utils';
-import { type XAxisType, type YAxisType } from '../../lib/utils/chart-scales';
+import { type XAxisType, type YAxisType } from '../../lib/utils/chartScales';
 import ChartTooltip from './ChartTooltip';
 import { useChartDimensions } from '../../lib/hooks/useChartDimensions';
 import { useChartScales } from '../../lib/hooks/useChartScales';
 import { useTooltipState } from '../../lib/hooks/useTooltipState';
-import { processXHighlightRanges, processYHighlightRanges, validateChartData } from '../../lib/utils/chart-calculations';
+import { processXHighlightRanges, processYHighlightRanges, validateChartData } from '../../lib/utils/chartCalculations';
 
 // Re-export interfaces from utility for external use
 export type { DataPoint, HighlightRange } from '../../lib/utils';

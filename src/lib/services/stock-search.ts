@@ -1,5 +1,5 @@
 import { StockInfo } from '../types/stock';
-import { MOCK_STOCKS } from '../data/mock-stocks';
+import { MOCK_STOCKS } from '../data/mockStocks';
 
 export function searchStocks(query: string): StockInfo[] {
     if (!query) return [];
