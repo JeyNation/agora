@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState, useCallback } from 'react';
 import * as d3 from 'd3';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 import {
     drawGridLines,
     drawHighlightRanges,
@@ -13,6 +16,7 @@ import {
     drawYAxis,
     drawAxisLabels,
     styleAxisElements,
+    createClipPath,
     type DataPoint,
     type HighlightRange,
     type ChartDimensions,
@@ -27,7 +31,9 @@ import ChartTooltip from './ChartTooltip';
 import { useChartDimensions } from '../../lib/hooks/useChartDimensions';
 import { useChartScales } from '../../lib/hooks/useChartScales';
 import { useTooltipState } from '../../lib/hooks/useTooltipState';
+import { useAnimatedDomain } from '../../lib/hooks/useAnimatedDomain';
 import { processXHighlightRanges, processYHighlightRanges, validateChartData } from '../../lib/utils/chartCalculations';
+import { lineChartStyles } from '../../styles/components/charts';
 
 // Re-export interfaces from utility for external use
 export type { DataPoint, HighlightRange } from '../../lib/utils';
@@ -46,7 +52,6 @@ export interface ChartDimensionsConfig {
 export interface ChartStylingConfig {
     lineColor?: string;
     strokeWidth?: number;
-    className?: string;
     defaultHighlightColor?: string;
     defaultHighlightOpacity?: number;
 }
@@ -57,6 +62,9 @@ export interface ChartInteractionConfig {
     onHover?: (data: DataPoint | null) => void;
     showTooltip?: boolean;
     tooltipColor?: string;
+    enablePanning?: boolean;
+    onPan?: (newDomain: [Date, Date]) => void;
+    onDataNeeded?: (direction: 'before' | 'after', currentRange: [Date, Date], dataRange: [Date, Date]) => void;
 }
 
 export interface ChartAxesConfig {
@@ -68,6 +76,10 @@ export interface ChartAxesConfig {
     yDomain?: [number, number];
     formatX?: (value: unknown) => string;
     formatY?: (value: number) => string;
+    xTickCount?: number;
+    yTickCount?: number;
+	tooltipFormatX?: (value: unknown) => string;
+    tooltipFormatY?: (value: number) => string;
 }
 
 export interface ChartGridConfig {
@@ -78,6 +90,7 @@ export interface ChartGridConfig {
 export interface ChartAnimationConfig {
     animate?: boolean;
     animationDuration?: number;
+    animateOnDataChange?: boolean;
 }
 
 export interface ChartErrorConfig {
@@ -98,36 +111,15 @@ export interface LineChartProps {
     errorHandling?: ChartErrorConfig;
     xHighlightRanges?: HighlightRange[];
     yHighlightRanges?: HighlightRange[];
-    
-    // Legacy props for backward compatibility (will be deprecated)
-    loading?: boolean;
-    error?: Error | string | null;
-    width?: number | string;
-    height?: number | string;
-    margin?: { top: number; right: number; bottom: number; left: number; };
-    xAxisLabel?: string;
-    yAxisLabel?: string;
-    lineColor?: string;
-    strokeWidth?: number;
-    showDots?: boolean;
-    dotRadius?: number;
-    showXGrid?: boolean;
-    showYGrid?: boolean;
-    animate?: boolean;
-    animationDuration?: number;
-    xAxisType?: XAxisType;
-    yAxisType?: YAxisType;
-    xDomain?: [number | Date | string, number | Date | string];
-    yDomain?: [number, number];
-    defaultHighlightColor?: string;
-    defaultHighlightOpacity?: number;
-    formatX?: (value: unknown) => string;
-    formatY?: (value: number) => string;
-    onHover?: (data: DataPoint | null) => void;
-    showTooltip?: boolean;
-    tooltipColor?: string;
     className?: string;
 }
+
+const DEFAULT_MARGIN: NonNullable<ChartDimensionsConfig['margin']> = {
+    top: 30,
+    right: 30,
+    bottom: 30,
+    left: 30
+};
 
 function LineChart(props: LineChartProps) {
     const {
@@ -141,64 +133,51 @@ function LineChart(props: LineChartProps) {
         errorHandling,
         xHighlightRanges = [],
         yHighlightRanges = [],
-        // Legacy props for backward compatibility
-        loading: legacyLoading,
-        error: legacyError,
-        width: legacyWidth = 800,
-        height: legacyHeight = 400,
-        margin: legacyMargin = { top: 20, right: 20, bottom: 30, left: 60 },
-        xAxisLabel: legacyXAxisLabel,
-        yAxisLabel: legacyYAxisLabel,
-        lineColor: legacyLineColor,
-        strokeWidth: legacyStrokeWidth = 2,
-        showDots: legacyShowDots = false,
-        dotRadius: legacyDotRadius = 4,
-        showXGrid: legacyShowXGrid,
-        showYGrid: legacyShowYGrid,
-        animate: legacyAnimate = true,
-        animationDuration: legacyAnimationDuration = 1000,
-        xAxisType: legacyXAxisType = 'linear',
-        yAxisType: legacyYAxisType = 'linear',
-        xDomain: legacyXDomain,
-        yDomain: legacyYDomain,
-        defaultHighlightColor: legacyDefaultHighlightColor,
-        defaultHighlightOpacity: legacyDefaultHighlightOpacity = 0.15,
-        formatX: legacyFormatX,
-        formatY: legacyFormatY,
-        onHover: legacyOnHover,
-        showTooltip: legacyShowTooltip = false,
-        tooltipColor: legacyTooltipColor,
-        className: legacyClassName = '',
+        className: providedClassName = ''
     } = props;
 
-    // Merge grouped props with legacy props (grouped props take precedence)
-    const width = dimensions?.width ?? legacyWidth;
-    const height = dimensions?.height ?? legacyHeight;
-    const margin = dimensions?.margin ?? legacyMargin;
-    const lineColor = styling?.lineColor ?? legacyLineColor;
-    const strokeWidth = styling?.strokeWidth ?? legacyStrokeWidth;
-    const className = styling?.className ?? legacyClassName;
-    const defaultHighlightColor = styling?.defaultHighlightColor ?? legacyDefaultHighlightColor;
-    const defaultHighlightOpacity = styling?.defaultHighlightOpacity ?? legacyDefaultHighlightOpacity;
-    const showDots = interaction?.showDots ?? legacyShowDots;
-    const dotRadius = interaction?.dotRadius ?? legacyDotRadius;
-    const onHover = interaction?.onHover ?? legacyOnHover;
-    const showTooltip = interaction?.showTooltip ?? legacyShowTooltip;
-    const tooltipColor = interaction?.tooltipColor ?? legacyTooltipColor;
-    const xAxisType = axes?.xAxisType ?? legacyXAxisType;
-    const yAxisType = axes?.yAxisType ?? legacyYAxisType;
-    const xAxisLabel = axes?.xAxisLabel ?? legacyXAxisLabel;
-    const yAxisLabel = axes?.yAxisLabel ?? legacyYAxisLabel;
-    const xDomain = axes?.xDomain ?? legacyXDomain;
-    const yDomain = axes?.yDomain ?? legacyYDomain;
-    const formatX = axes?.formatX ?? legacyFormatX;
-    const formatY = axes?.formatY ?? legacyFormatY;
-    const showXGrid = grid?.showXGrid ?? legacyShowXGrid;
-    const showYGrid = grid?.showYGrid ?? legacyShowYGrid;
-    const animate = animation?.animate ?? legacyAnimate;
-    const animationDuration = animation?.animationDuration ?? legacyAnimationDuration;
-    const loading = errorHandling?.loading ?? legacyLoading ?? false;
-    const error = errorHandling?.error ?? legacyError;
+    const width = dimensions?.width ?? 800;
+    const height = dimensions?.height ?? 400;
+    const margin = dimensions?.margin ?? DEFAULT_MARGIN;
+
+    const lineColor = styling?.lineColor;
+    const strokeWidth = styling?.strokeWidth ?? 2;
+    const defaultHighlightColor = styling?.defaultHighlightColor;
+    const defaultHighlightOpacity = styling?.defaultHighlightOpacity ?? 0.15;
+
+    const className = providedClassName;
+
+    const showDots = interaction?.showDots ?? false;
+    const dotRadius = interaction?.dotRadius ?? 4;
+    const onHover = interaction?.onHover;
+    const showTooltip = interaction?.showTooltip ?? false;
+    const tooltipColor = interaction?.tooltipColor;
+    const enablePanning = interaction?.enablePanning ?? false;
+    const onPan = interaction?.onPan;
+    const onDataNeeded = interaction?.onDataNeeded;
+
+    const xAxisType = axes?.xAxisType ?? 'linear';
+    const yAxisType = axes?.yAxisType ?? 'linear';
+    const xAxisLabel = axes?.xAxisLabel;
+    const yAxisLabel = axes?.yAxisLabel;
+    const xDomain = axes?.xDomain;
+    const yDomain = axes?.yDomain;
+    const formatX = axes?.formatX;
+    const formatY = axes?.formatY;
+	const tooltipFormatX = axes?.tooltipFormatX;
+    const tooltipFormatY = axes?.tooltipFormatY;
+    const xTickCount = axes?.xTickCount ?? 6;
+    const yTickCount = axes?.yTickCount ?? 5;
+
+    const showXGrid = grid?.showXGrid ?? false;
+    const showYGrid = grid?.showYGrid ?? false;
+
+    const animate = animation?.animate ?? true;
+    const animationDuration = animation?.animationDuration ?? 1000;
+    const animateOnDataChange = animation?.animateOnDataChange ?? true;
+
+    const loading = errorHandling?.loading ?? false;
+    const error = errorHandling?.error ?? null;
     const fallback = errorHandling?.fallback;
     const onError = errorHandling?.onError;
     const svgRef = useRef<SVGSVGElement>(null);
@@ -219,23 +198,122 @@ function LineChart(props: LineChartProps) {
     const textColor = theme.palette.text.secondary;
     const defaultHighlightColorValue = defaultHighlightColor || theme.palette.action.hover;
 
+    // Panning state management
+    const [isPanning, setIsPanning] = useState(false);
+    const [panStartX, setPanStartX] = useState<number>(0);
+    const [currentXDomain, setCurrentXDomain] = useState<[Date, Date] | null>(null);
+
     // Use custom hook for tooltip state
     const { tooltipData, setTooltipData } = useTooltipState();
     
     // Track if initial animation has completed to prevent re-animation on hover
     const hasAnimatedRef = React.useRef(false);
+    const prevDataRef = useRef<DataPoint[] | null>(null);
+    const [shouldAnimateTransitions, setShouldAnimateTransitions] = useState<boolean>(() => animate);
 
     // Reset animation flag when data actually changes
     useEffect(() => {
-        hasAnimatedRef.current = false;
-    }, [data]);
+        const prevData = prevDataRef.current;
+        prevDataRef.current = data;
+
+        if (!animate) {
+            if (shouldAnimateTransitions) {
+                setShouldAnimateTransitions(false);
+            }
+            return;
+        }
+
+        const shouldAnimateNow = !prevData || animateOnDataChange;
+
+        if (shouldAnimateNow) {
+            hasAnimatedRef.current = false;
+        }
+
+        if (shouldAnimateTransitions !== shouldAnimateNow) {
+            setShouldAnimateTransitions(shouldAnimateNow);
+        }
+    }, [data, animate, animateOnDataChange, shouldAnimateTransitions]);
+
+    const effectiveAnimate = animate && shouldAnimateTransitions;
+
+    // Calculate effective x-domain (original or panned)
+    const effectiveXDomain = currentXDomain || xDomain;
+    
+    const visibleData = useMemo(() => {
+        if (!data || data.length === 0) {
+            return [] as DataPoint[];
+        }
+
+        if (xAxisType === 'time' && effectiveXDomain) {
+            const [start, end] = effectiveXDomain as [Date, Date];
+            return data.filter(point => {
+                const value = point.x instanceof Date ? point.x : new Date(point.x as string | number | Date);
+                return value >= start && value <= end;
+            });
+        }
+
+        return data;
+    }, [data, effectiveXDomain, xAxisType]);
+
+    const computeAutoYDomain = useCallback((points: DataPoint[]): [number, number] | null => {
+        if (!points || points.length === 0) {
+            return null;
+        }
+
+        const extent = d3.extent(points, p => p.y) as [number | undefined, number | undefined];
+        const minY = extent[0];
+        const maxY = extent[1];
+
+        if (minY === undefined || maxY === undefined || !Number.isFinite(minY) || !Number.isFinite(maxY)) {
+            return null;
+        }
+
+        let lower = minY;
+        let upper = maxY;
+
+        if (lower === upper) {
+            const paddingBase = Math.abs(lower) || 1;
+            const padding = paddingBase * 0.1;
+            lower -= padding;
+            upper += padding;
+        } else {
+            const padding = (upper - lower) * 0.1;
+            lower -= padding;
+            upper += padding;
+        }
+
+        if (lower >= 0 && upper >= 0) {
+            lower = Math.max(0, lower);
+        }
+
+        const niceScale = d3.scaleLinear().domain([lower, upper]).nice();
+        const niceDomain = niceScale.domain() as [number, number];
+        return niceDomain;
+    }, []);
+
+    const autoCalculatedYDomain = useMemo(() => {
+        if (yDomain) {
+            return null;
+        }
+
+        return computeAutoYDomain(visibleData);
+    }, [computeAutoYDomain, visibleData, yDomain]);
+
+    const targetYDomain = yDomain ?? autoCalculatedYDomain;
+
+    const [animatedYDomain] = useAnimatedDomain(targetYDomain, {
+        duration: effectiveAnimate ? (isPanning ? 0 : animationDuration) : 0,
+        enabled: effectiveAnimate
+    });
+
+    const resolvedYDomain = animatedYDomain ?? targetYDomain ?? undefined;
 
     // Use custom hook for scale creation and memoization
     const { xScale, yScale } = useChartScales(data, chartWidth, chartHeight, {
         xAxisType,
         yAxisType,
-        xDomain,
-        yDomain
+        xDomain: effectiveXDomain,
+        yDomain: resolvedYDomain
     });
 
     // Process highlight ranges using pure functions
@@ -280,6 +358,7 @@ function LineChart(props: LineChartProps) {
             .curve(d3.curveMonotoneX);
     }, [xScale, yScale, xAxisType]);
 
+    // Y-axis control functions (defined after scales are available)
     // Handle grid visibility with backward compatibility
     const shouldShowXGrid = showXGrid !== undefined ? showXGrid : false;
     const shouldShowYGrid = showYGrid !== undefined ? showYGrid : false;
@@ -315,14 +394,16 @@ function LineChart(props: LineChartProps) {
             formatX,
             formatY,
             textColor,
-            xAxisType
+            xAxisType,
+            xTickCount,
+            yTickCount
         };
 
         const lineConfig: LineConfig = {
             data,
             lineColor: defaultLineColor,
             strokeWidth,
-            animate,
+            animate: effectiveAnimate,
             animationDuration,
             hasAnimatedRef,
             xAxisType
@@ -333,7 +414,7 @@ function LineChart(props: LineChartProps) {
             showDots,
             dotRadius,
             dotColor: defaultLineColor,
-            animate,
+            animate: effectiveAnimate,
             animationDuration,
             hasAnimatedRef,
             xAxisType,
@@ -368,14 +449,16 @@ function LineChart(props: LineChartProps) {
         data,
         defaultLineColor,
         strokeWidth,
-        animate,
+        effectiveAnimate,
         animationDuration,
         hasAnimatedRef,
         showDots,
         dotRadius,
         onHover,
         showTooltip,
-        setTooltipData
+        setTooltipData,
+        xTickCount,
+        yTickCount
     ]);
 
     useEffect(() => {
@@ -400,30 +483,111 @@ function LineChart(props: LineChartProps) {
         const g = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
+        // Create clipping path for panning (masks content outside chart area)
+        const clipPathUrl = createClipPath(svg, {
+            width: actualWidth,
+            height: actualHeight,
+            margin
+        });
+
         // Use memoized configuration objects
         const { dimensions, scales, gridConfig, axisConfig, lineConfig, dotsConfig } = chartConfigs;
 
         // draw frames for the chart
         drawGridLines(g, scales, dimensions, gridConfig);
-        drawHighlightRanges(g, processedXHighlights, processedYHighlights, chartWidth, chartHeight);
+        drawHighlightRanges(g, processedXHighlights, processedYHighlights, chartWidth, chartHeight, clipPathUrl);
         drawXAxis(g, xScale, chartHeight, axisConfig);
         drawYAxis(g, yScale, axisConfig);
         drawAxisLabels(g, dimensions, axisConfig);
         styleAxisElements(svg, textColor);
 
-		// plot data point
-        drawLinePath(g, line, lineConfig);
-        drawDots(g, scales, dotsConfig);
+		// plot data point with clipping
+        drawLinePath(g, line, lineConfig, clipPathUrl);
+        drawDots(g, scales, dotsConfig, clipPathUrl);
         if (showTooltip && !showDots) {
             drawHoverAreas(g, scales, data, xAxisType, onHover, setTooltipData);
+        }
+
+        // Add panning functionality if enabled
+        if (enablePanning && xAxisType === 'time' && xScale) {
+            const timeScale = xScale as d3.ScaleTime<number, number>;
+            
+            const handleMouseDown = (event: MouseEvent) => {
+                event.preventDefault();
+                setIsPanning(true);
+                setPanStartX(event.clientX);
+                svg.style("cursor", "grabbing");
+            };
+
+            const handleMouseMove = (event: MouseEvent) => {
+                if (!isPanning) return;
+                
+                const deltaX = event.clientX - panStartX;
+                const scaleRange = timeScale.range();
+                const scaleDomain = timeScale.domain();
+                
+                // Calculate the time difference based on pixel movement
+                const pixelToTime = (scaleRange[1] - scaleRange[0]) / (scaleDomain[1].getTime() - scaleDomain[0].getTime());
+                const timeDelta = deltaX / pixelToTime;
+                
+                // Create new domain by shifting both start and end
+                const newStart = new Date(scaleDomain[0].getTime() - timeDelta);
+                const newEnd = new Date(scaleDomain[1].getTime() - timeDelta);
+                
+                setCurrentXDomain([newStart, newEnd]);
+                setPanStartX(event.clientX);
+            };
+
+            const handleMouseUp = () => {
+                if (isPanning) {
+                    setIsPanning(false);
+                    svg.style("cursor", "grab");
+                    
+                    // Call onPan callback if provided
+                    if (onPan && currentXDomain) {
+                        onPan(currentXDomain);
+                    }
+                    
+                    // Check if we need additional data
+                    if (onDataNeeded && currentXDomain && xAxisType === 'time') {
+                        const dataRange = d3.extent(data, d => d.x as Date) as [Date, Date];
+                        if (dataRange[0] && dataRange[1]) {
+                            const [currentStart, currentEnd] = currentXDomain;
+                            
+                            // Check if we've panned beyond the beginning of the data
+                            if (currentStart < dataRange[0]) {
+                                onDataNeeded('before', currentXDomain, dataRange);
+                            }
+                            
+                            // Check if we've panned beyond the end of the data  
+                            if (currentEnd > dataRange[1]) {
+                                onDataNeeded('after', currentXDomain, dataRange);
+                            }
+                        }
+                    }
+
+                }
+            };
+
+            // Add event listeners to SVG
+            svg
+                .style("cursor", "grab")
+                .on("mousedown", handleMouseDown);
+
+            // Add document listeners for mouse move and up (to handle dragging outside SVG)
+            d3.select(document)
+                .on("mousemove.pan", handleMouseMove)
+                .on("mouseup.pan", handleMouseUp);
         }
     }, [
         chartConfigs,
         line,
         processedXHighlights,
         processedYHighlights,
-        chartWidth,
-        chartHeight,
+		chartWidth,
+		chartHeight,
+		actualWidth,
+		actualHeight,
         xScale,
         yScale,
         data,
@@ -432,10 +596,25 @@ function LineChart(props: LineChartProps) {
         setTooltipData,
         showTooltip,
         showDots,
-        margin.left,
-        margin.top,
-        textColor
+    	margin,
+        textColor,
+        enablePanning,
+        isPanning,
+        panStartX,
+        currentXDomain,
+        onPan,
+        onDataNeeded
     ]);
+
+    // Cleanup panning event listeners
+    useEffect(() => {
+        return () => {
+            // Cleanup document event listeners
+            d3.select(document)
+                .on("mousemove.pan", null)
+                .on("mouseup.pan", null);
+        };
+    }, []);
 
     // Error boundary logic
     useEffect(() => {
@@ -447,77 +626,26 @@ function LineChart(props: LineChartProps) {
     // Error state rendering
     if (error) {
         if (fallback) {
-            return React.createElement(fallback, { 
-                error: typeof error === 'string' ? new Error(error) : error 
+            return React.createElement(fallback, {
+                error: typeof error === 'string' ? new Error(error) : error
             });
         }
-        
-        return (
-            <div 
-                style={{
-                    width: typeof width === 'string' ? width : width + 'px',
-                    height: typeof height === 'string' ? height : height + 'px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '4px',
-                    color: '#d32f2f',
-                    fontSize: '14px',
-                    padding: '20px'
-                }}
-                className={className}
-            >
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-                        Chart Error
-                    </div>
-                    <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                        {typeof error === 'string' ? error : error.message || 'An unexpected error occurred'}
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
-    // Loading state rendering
-    if (loading) {
         return (
-            <div 
-                style={{
-                    width: typeof width === 'string' ? width : width + 'px',
-                    height: typeof height === 'string' ? height : height + 'px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '4px',
-                    color: '#757575',
-                    fontSize: '14px'
-                }}
+            <Box
                 className={className}
+                sx={{
+                    ...lineChartStyles.stateRoot(theme, width, height),
+                    ...lineChartStyles.stateError(theme)
+                }}
             >
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ marginBottom: '8px' }}>Loading chart...</div>
-                    <div 
-                        style={{
-                            width: '20px',
-                            height: '20px',
-                            border: '2px solid #e0e0e0',
-                            borderTop: '2px solid #1976d2',
-                            borderRadius: '50%',
-                            animation: 'spin 1s linear infinite',
-                            margin: '0 auto'
-                        }}
-                    />
-                </div>
-                <style jsx>{`
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}</style>
-            </div>
+                <Typography variant="subtitle2" sx={lineChartStyles.stateTitle(theme)}>
+                    Chart Error
+                </Typography>
+                <Typography variant="caption" sx={lineChartStyles.stateMessage(theme)}>
+                    {typeof error === 'string' ? error : error.message || 'An unexpected error occurred'}
+                </Typography>
+            </Box>
         );
     }
 
@@ -535,70 +663,67 @@ function LineChart(props: LineChartProps) {
         }
         
         return (
-            <div 
-                style={{
-                    width: typeof width === 'string' ? width : width + 'px',
-                    height: typeof height === 'string' ? height : height + 'px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '4px',
-                    color: '#d32f2f',
-                    fontSize: '14px'
-                }}
+            <Box
                 className={className}
+                sx={{
+                    ...lineChartStyles.stateRoot(theme, width, height),
+                    ...lineChartStyles.stateError(theme)
+                }}
             >
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Invalid Data</div>
-                    <div style={{ fontSize: '12px' }}>{dataValidationError}</div>
-                </div>
-            </div>
+                <Typography variant="subtitle2" sx={lineChartStyles.stateTitle(theme)}>
+                    Invalid Data
+                </Typography>
+                <Typography variant="caption" sx={lineChartStyles.stateMessage(theme)}>
+                    {dataValidationError}
+                </Typography>
+            </Box>
         );
     }
 
-    // Determine container style based on width/height props
-    const containerStyle: React.CSSProperties = {
-        width: typeof width === 'string' ? width : undefined,
-        height: typeof height === 'string' ? height : undefined,
-        minHeight: typeof height === 'string' ? '200px' : undefined,
-        minWidth: typeof width === 'string' ? '300px' : undefined,
-    };
-
     return (
-        <div 
+        <Box
             ref={containerRef}
             className={className}
-            style={{ ...containerStyle, position: 'relative' }}
+            sx={lineChartStyles.container(width, height)}
             onMouseLeave={() => {
                 if (showTooltip) {
                     setTooltipData(null);
                 }
                 if (onHover) onHover(null);
             }}
+			onMouseDown={() => {
+				if (showTooltip) {
+					setTooltipData(null);
+				}
+				if (onHover) onHover(null);
+			}}
         >
-            <svg
+            <Box
+                component="svg"
                 ref={svgRef}
                 width={actualWidth}
                 height={actualHeight}
-                style={{ 
-                    display: 'block',
-                    overflow: 'visible',
-                    width: '100%',
-                    height: '100%'
-                }}
+                sx={lineChartStyles.svg()}
             />
             <ChartTooltip 
                 tooltipData={tooltipData}
                 actualWidth={actualWidth}
                 actualHeight={actualHeight}
                 margin={margin}
-                formatX={formatX}
-                formatY={formatY}
+                formatX={tooltipFormatX ?? formatX}
+                formatY={tooltipFormatY ?? formatY}
                 tooltipColor={tooltipColor}
                 gridColor={gridColor}
             />
-        </div>
+            {loading && (
+                <Box sx={lineChartStyles.overlay(theme)}>
+                    <CircularProgress size={28} thickness={4} />
+                    <Typography variant="caption" sx={lineChartStyles.overlayLabel(theme)}>
+                        Loading data…
+                    </Typography>
+                </Box>
+            )}
+        </Box>
     );
 }
 
@@ -606,8 +731,7 @@ function LineChart(props: LineChartProps) {
 export default React.memo(LineChart, (prevProps, nextProps) => {
     // Fast reference checks for performance-critical props
     if (prevProps.data !== nextProps.data) return false;
-    if (prevProps.width !== nextProps.width) return false;
-    if (prevProps.height !== nextProps.height) return false;
+    if (prevProps.className !== nextProps.className) return false;
     
     // Check grouped props objects
     if (prevProps.dimensions !== nextProps.dimensions) return false;
@@ -620,22 +744,6 @@ export default React.memo(LineChart, (prevProps, nextProps) => {
     // Check arrays
     if (prevProps.xHighlightRanges !== nextProps.xHighlightRanges) return false;
     if (prevProps.yHighlightRanges !== nextProps.yHighlightRanges) return false;
-    
-    // Legacy props for backward compatibility
-    if (prevProps.margin !== nextProps.margin) return false;
-    if (prevProps.lineColor !== nextProps.lineColor) return false;
-    if (prevProps.strokeWidth !== nextProps.strokeWidth) return false;
-    if (prevProps.showDots !== nextProps.showDots) return false;
-    if (prevProps.dotRadius !== nextProps.dotRadius) return false;
-    if (prevProps.showXGrid !== nextProps.showXGrid) return false;
-    if (prevProps.showYGrid !== nextProps.showYGrid) return false;
-    if (prevProps.animate !== nextProps.animate) return false;
-    if (prevProps.animationDuration !== nextProps.animationDuration) return false;
-    if (prevProps.xAxisType !== nextProps.xAxisType) return false;
-    if (prevProps.yAxisType !== nextProps.yAxisType) return false;
-    if (prevProps.xAxisLabel !== nextProps.xAxisLabel) return false;
-    if (prevProps.yAxisLabel !== nextProps.yAxisLabel) return false;
-    if (prevProps.className !== nextProps.className) return false;
 
     return true; // Props are equal, skip re-render
 });

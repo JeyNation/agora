@@ -52,6 +52,8 @@ export interface AxisConfig {
     formatY?: (value: number) => string;
     textColor: string;
     xAxisType: 'linear' | 'time' | 'band';
+    xTickCount?: number;
+    yTickCount?: number;
 }
 
 export interface LineConfig {
@@ -76,6 +78,52 @@ export interface DotsConfig {
     onHover?: (data: DataPoint | null) => void;
     showTooltip: boolean;
     setTooltipData?: (data: { data: DataPoint; position: { x: number; y: number } } | null) => void;
+}
+
+/**
+ * Generate consistent time ticks with fixed intervals to avoid spacing inconsistencies at month boundaries
+ */
+export function generateConsistentTimeTicks(
+    scale: d3.ScaleTime<number, number>,
+    intervalDays: number = 2
+): Date[] {
+    const [startDate, endDate] = scale.domain();
+    const ticks: Date[] = [];
+    
+    // Start from the first date in domain
+    const currentDate = new Date(startDate);
+    
+    // Generate ticks at consistent intervals
+    while (currentDate <= endDate) {
+        ticks.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + intervalDays);
+    }
+    
+    return ticks;
+}
+
+/**
+ * Create a clipping path to mask chart content within boundaries
+ */
+export function createClipPath(
+    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
+    dimensions: ChartDimensions,
+    clipId: string = 'chart-clip'
+): string {
+    // Remove existing clip path if it exists
+    svg.select(`#${clipId}`).remove();
+    
+    // Create new clip path
+    svg.append("defs")
+        .append("clipPath")
+        .attr("id", clipId)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", dimensions.width - dimensions.margin.left - dimensions.margin.right)
+        .attr("height", dimensions.height - dimensions.margin.top - dimensions.margin.bottom);
+    
+    return `url(#${clipId})`;
 }
 
 /**
@@ -140,8 +188,9 @@ export function drawGridLines(
     if (config.showYGrid && config.xAxisType !== 'band') {
         if (config.xAxisType === 'time') {
             const timeScale = xScale as d3.ScaleTime<number, number>;
+            const consistentTicks = generateConsistentTimeTicks(timeScale, 2);
             container.selectAll(".grid-y")
-                .data(timeScale.ticks())
+                .data(consistentTicks)
                 .enter()
                 .append("line")
                 .attr("class", "grid-y")
@@ -178,11 +227,12 @@ export function drawHighlightRanges(
     xHighlights: ProcessedHighlight[],
     yHighlights: ProcessedHighlight[],
     chartWidth: number,
-    chartHeight: number
+    chartHeight: number,
+    clipPathUrl?: string
 ): void {
     // X-axis highlight ranges
     if (xHighlights.length > 0) {
-        container.selectAll(".x-highlight")
+        const xHighlightRects = container.selectAll(".x-highlight")
             .data(xHighlights)
             .enter()
             .append("rect")
@@ -194,11 +244,16 @@ export function drawHighlightRanges(
             .style("fill", d => d.color)
             .style("opacity", d => d.opacity)
             .style("pointer-events", "none");
+
+        // Apply clipping if provided
+        if (clipPathUrl) {
+            xHighlightRects.attr("clip-path", clipPathUrl);
+        }
     }
 
     // Y-axis highlight ranges
     if (yHighlights.length > 0) {
-        container.selectAll(".y-highlight")
+        const yHighlightRects = container.selectAll(".y-highlight")
             .data(yHighlights)
             .enter()
             .append("rect")
@@ -210,6 +265,11 @@ export function drawHighlightRanges(
             .style("fill", d => d.color)
             .style("opacity", d => d.opacity)
             .style("pointer-events", "none");
+
+        // Apply clipping if provided
+        if (clipPathUrl) {
+            yHighlightRects.attr("clip-path", clipPathUrl);
+        }
     }
 }
 
@@ -219,7 +279,8 @@ export function drawHighlightRanges(
 export function drawLinePath(
     container: d3.Selection<SVGGElement, unknown, null, undefined>,
     line: d3.Line<DataPoint>,
-    config: LineConfig
+    config: LineConfig,
+    clipPathUrl?: string
 ): d3.Selection<SVGPathElement, DataPoint[], null, undefined> {
     const path = container.append("path")
         .datum(config.data)
@@ -228,6 +289,11 @@ export function drawLinePath(
         .attr("stroke", config.lineColor)
         .attr("stroke-width", config.strokeWidth)
         .attr("d", line);
+
+    // Apply clipping path if provided
+    if (clipPathUrl) {
+        path.attr("clip-path", clipPathUrl);
+    }
 
     // Animate the line drawing if enabled (only on first render)
     if (config.animate && !config.hasAnimatedRef.current) {
@@ -253,7 +319,8 @@ export function drawLinePath(
 export function drawDots(
     container: d3.Selection<SVGGElement, unknown, null, undefined>,
     scales: ChartScales,
-    config: DotsConfig
+    config: DotsConfig,
+    clipPathUrl?: string
 ): d3.Selection<SVGCircleElement, DataPoint, SVGGElement, unknown> | null {
     if (!config.showDots) return null;
 
@@ -266,6 +333,11 @@ export function drawDots(
         .attr("cy", d => calculateYPosition(d, scales.yScale))
         .attr("r", 0)
         .style("fill", config.dotColor);
+
+    // Apply clipping path if provided
+    if (clipPathUrl) {
+        dots.attr("clip-path", clipPathUrl);
+    }
 
     // Animate dots appearance
     if (config.animate && !config.hasAnimatedRef.current) {
@@ -368,6 +440,17 @@ export function drawXAxis(
     
     // Configure axis based on type
     if (config.xAxisType === 'band') {
+        const bandScale = xScale as d3.ScaleBand<string>;
+        if (config.xTickCount && config.xTickCount > 0) {
+            const domain = bandScale.domain();
+            const step = Math.max(1, Math.ceil(domain.length / config.xTickCount));
+            const filteredTicks = domain.filter((_, index) => index % step === 0);
+            const lastLabel = domain[domain.length - 1];
+            if (lastLabel && filteredTicks[filteredTicks.length - 1] !== lastLabel) {
+                filteredTicks.push(lastLabel);
+            }
+            xAxis.tickValues(filteredTicks);
+        }
         xAxis
             .tickSizeOuter(0)
             .tickFormat((d: d3.AxisDomain) => {
@@ -376,10 +459,34 @@ export function drawXAxis(
                 }
                 return String(d);
             });
+    } else if (config.xAxisType === 'time') {
+        // Use consistent time ticks to avoid spacing issues at month boundaries
+        const timeScale = xScale as d3.ScaleTime<number, number>;
+        const [startDate, endDate] = timeScale.domain();
+        const totalDays = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+        let intervalDays = 2;
+        if (config.xTickCount && config.xTickCount > 1) {
+            intervalDays = Math.max(1, Math.ceil(totalDays / (config.xTickCount - 1)));
+        }
+        const consistentTicks = generateConsistentTimeTicks(timeScale, intervalDays);
+        if (config.xTickCount && config.xTickCount > 0) {
+            xAxis.ticks(config.xTickCount);
+        }
+        xAxis
+            .tickValues(consistentTicks)
+            .tickFormat((d: d3.AxisDomain) => {
+                if (config.formatX) {
+                    return config.formatX(d);
+                }
+                return d3.timeFormat("%m/%d")(d as Date);
+            });
     } else if (config.formatX) {
         xAxis.tickFormat(config.formatX);
-    } else if (config.xAxisType === 'time') {
-        xAxis.tickFormat((d: d3.AxisDomain) => d3.timeFormat("%m/%d")(d as Date));
+        if (config.xTickCount && config.xTickCount > 0) {
+            xAxis.ticks(config.xTickCount);
+        }
+    } else if (config.xTickCount && config.xTickCount > 0) {
+        xAxis.ticks(config.xTickCount);
     }
 
     const xAxisGroup = container.append("g")
@@ -411,6 +518,9 @@ export function drawYAxis(
     config: AxisConfig
 ): void {
     const yAxis = d3.axisLeft(yScale as d3.AxisScale<d3.AxisDomain>);
+    if (config.yTickCount && config.yTickCount > 0) {
+        yAxis.ticks(config.yTickCount);
+    }
     if (config.formatY) {
         yAxis.tickFormat((d: d3.AxisDomain) => config.formatY!(Number(d)));
     }

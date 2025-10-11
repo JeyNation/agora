@@ -34,21 +34,24 @@ export default function ChartShowcase() {
                         </Typography>
                         <LineChart
                             data={SAMPLE_STOCK_DATA}
-                            width={500}
-                            height={300}
-                            xAxisType="time"
-                            xAxisLabel="Date"
-                            yAxisLabel="Price ($)"
-                            formatX={dateFormatter}
-                            formatY={currencyFormatter}
-                            showDots={true}
-                            animate={true}
-                            strokeWidth={2}
-                            onHover={(data) => {
-                                if (data) {
-                                    console.log(`Stock Price: ${currencyFormatter(data.y)} on ${dateFormatter(data.x)}`);
+                            dimensions={{ width: 500, height: 300 }}
+                            axes={{
+                                xAxisType: 'time',
+                                xAxisLabel: 'Date',
+                                yAxisLabel: 'Price ($)',
+                                formatX: dateFormatter,
+                                formatY: currencyFormatter
+                            }}
+                            interaction={{
+                                showDots: true,
+                                onHover: (data) => {
+                                    if (data) {
+                                        console.log(`Stock Price: ${currencyFormatter(data.y)} on ${dateFormatter(data.x)}`);
+                                    }
                                 }
                             }}
+                            styling={{ strokeWidth: 2 }}
+                            animation={{ animate: true }}
                         />
                     </CardContent>
                 </Card>
@@ -61,15 +64,15 @@ export default function ChartShowcase() {
                         </Typography>
                         <LineChart
                             data={SAMPLE_LINEAR_DATA}
-                            width={500}
-                            height={300}
-                            xAxisType="linear"
-                            xAxisLabel="Time (hours)"
-                            yAxisLabel="Temperature (°C)"
-                            showDots={true}
-                            animate={true}
-                            lineColor="#ff6b35"
-                            strokeWidth={3}
+                            dimensions={{ width: 500, height: 300 }}
+                            axes={{
+                                xAxisType: 'linear',
+                                xAxisLabel: 'Time (hours)',
+                                yAxisLabel: 'Temperature (°C)'
+                            }}
+                            interaction={{ showDots: true }}
+                            styling={{ lineColor: '#ff6b35', strokeWidth: 3 }}
+                            animation={{ animate: true }}
                         />
                     </CardContent>
                 </Card>
@@ -84,17 +87,16 @@ export default function ChartShowcase() {
                         </Typography>
                         <LineChart
                             data={SAMPLE_CATEGORICAL_DATA}
-                            width={500}
-                            height={300}
-                            xAxisType="band"
-                            xAxisLabel="Month"
-                            yAxisLabel="Sales (%)"
-                            formatY={percentageFormatter}
-                            showDots={true}
-                            animate={true}
-                            lineColor="#4caf50"
-                            strokeWidth={2}
-                            dotRadius={6}
+                            dimensions={{ width: 500, height: 300 }}
+                            axes={{
+                                xAxisType: 'band',
+                                xAxisLabel: 'Month',
+                                yAxisLabel: 'Sales (%)',
+                                formatY: percentageFormatter
+                            }}
+                            interaction={{ showDots: true, dotRadius: 6 }}
+                            styling={{ lineColor: '#4caf50', strokeWidth: 2 }}
+                            animation={{ animate: true }}
                         />
                     </CardContent>
                 </Card>
@@ -107,18 +109,16 @@ export default function ChartShowcase() {
                         </Typography>
                         <LineChart
                             data={SAMPLE_REVENUE_DATA}
-                            width={500}
-                            height={300}
-                            xAxisType="linear"
-                            xAxisLabel="Year"
-                            yAxisLabel="Revenue"
-                            formatY={millionsFormatter}
-                            showDots={true}
-                            animate={true}
-                            lineColor="#9c27b0"
-                            strokeWidth={2}
-                            dotRadius={5}
-                            animationDuration={2000}
+                            dimensions={{ width: 500, height: 300 }}
+                            axes={{
+                                xAxisType: 'linear',
+                                xAxisLabel: 'Year',
+                                yAxisLabel: 'Revenue',
+                                formatY: millionsFormatter
+                            }}
+                            interaction={{ showDots: true, dotRadius: 5 }}
+                            styling={{ lineColor: '#9c27b0', strokeWidth: 2 }}
+                            animation={{ animate: true, animationDuration: 2000 }}
                         />
                     </CardContent>
                 </Card>

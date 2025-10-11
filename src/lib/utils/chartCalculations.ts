@@ -35,8 +35,8 @@ export function processXHighlightRanges(
         }
         
         return {
-            x: Math.max(0, Math.min(startPos, endPos)),
-            width: Math.min(chartWidth, Math.abs(endPos - startPos)),
+            x: Math.min(startPos, endPos),
+            width: Math.abs(endPos - startPos),
             color: range.color || defaultHighlightColor,
             opacity: range.opacity || defaultHighlightOpacity
         };
@@ -61,8 +61,8 @@ export function processYHighlightRanges(
         const endPos = scale(Number(range.end));
         
         return {
-            y: Math.max(0, Math.min(startPos, endPos)),
-            height: Math.min(chartHeight, Math.abs(startPos - endPos)),
+            y: Math.min(startPos, endPos),
+            height: Math.abs(startPos - endPos),
             color: range.color || defaultHighlightColor,
             opacity: range.opacity || defaultHighlightOpacity
         };

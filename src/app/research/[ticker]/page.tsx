@@ -12,9 +12,9 @@ import LineChart from '../../../components/charts/LineChart';
 import { searchStocks } from '../../../lib/services/stock-search';
 import { tickerStyles } from '../../../styles/components';
 import type { StockInfo } from '../../../lib/types/stock';
-import { SAMPLE_STOCK_DATA, currencyFormatter, dateFormatter } from '../../../lib/data/chartSampleData';
+import { SAMPLE_STOCK_DATA, EXTENDED_STOCK_DATA, currencyFormatter, currencyFormatterFull, dateFormatter, dateFormatterFull } from '../../../lib/data/chartSampleData';
 import { useResearchHistory } from '@/lib/hooks/useResearchHistory';
-import type { HighlightRange } from '../../../components/charts/LineChart';
+import type { HighlightRange, DataPoint } from '../../../components/charts/LineChart';
 
 interface StockMetric {
     label: string;
@@ -112,15 +112,83 @@ export default function TickerPage() {
     const [error, setError] = React.useState<string | null>(null);
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [stockData, setStockData] = React.useState<StockInfo | null>(null);
+    
+    // Dynamic chart data state
+    const [chartData, setChartData] = React.useState<DataPoint[]>(SAMPLE_STOCK_DATA);
+    const [isLoadingData, setIsLoadingData] = React.useState(false);
+    const [loadedRanges, setLoadedRanges] = React.useState<{ before: boolean; after: boolean }>({
+        before: false,
+        after: false
+    });
 
-    // Define chart domain and calculate weekend ranges
+    // Define initial chart domain and calculate weekend ranges
     const chartXDomain: [Date, Date] = [new Date('2024-01-01'), new Date('2024-02-01')];
-    const chartStartDate = chartXDomain[0];
-    const chartEndDate = chartXDomain[1];
+    const [currentDomain, setCurrentDomain] = React.useState<[Date, Date]>(chartXDomain);
+    const chartStartDate = currentDomain[0];
+    const chartEndDate = currentDomain[1];
     const weekendRanges = React.useMemo(() => 
         calculateWeekendRanges(chartStartDate, chartEndDate), 
         [chartStartDate, chartEndDate]
     );
+    
+    // Handle dynamic data loading when panning beyond current data boundaries
+    const handleDataNeeded = React.useCallback((
+        direction: 'before' | 'after',
+        currentRange: [Date, Date],
+        dataRange: [Date, Date]
+    ) => {
+        // Prevent multiple simultaneous loads or loading already loaded ranges
+        if (isLoadingData || loadedRanges[direction]) return;
+        
+        console.log('Data needed:', direction, 'Current range:', currentRange, 'Data range:', dataRange);
+        setIsLoadingData(true);
+        
+        // Simulate loading delay (in real app, this would be an API call)
+        setTimeout(() => {
+            setChartData(currentData => {
+                // Get existing data timestamps for duplicate check
+                const existingTimestamps = new Set(
+                    currentData.map(point => (point.x as Date).getTime())
+                );
+                
+                let newDataToAdd: DataPoint[] = [];
+                
+                if (direction === 'before') {
+                    // Only add earlier data that doesn't already exist and is before current data range
+                    newDataToAdd = EXTENDED_STOCK_DATA.before.filter(point => {
+                        const pointTime = (point.x as Date).getTime();
+                        return pointTime < dataRange[0].getTime() && !existingTimestamps.has(pointTime);
+                    });
+                    
+                    console.log(`Loading ${newDataToAdd.length} earlier data points`);
+                    return [...newDataToAdd, ...currentData].sort((a, b) => (a.x as Date).getTime() - (b.x as Date).getTime());
+                } else {
+                    // Only add later data that doesn't already exist and is after current data range
+                    newDataToAdd = EXTENDED_STOCK_DATA.after.filter(point => {
+                        const pointTime = (point.x as Date).getTime();
+                        return pointTime > dataRange[1].getTime() && !existingTimestamps.has(pointTime);
+                    });
+                    
+                    console.log(`Loading ${newDataToAdd.length} later data points`);
+                    return [...currentData, ...newDataToAdd].sort((a, b) => (a.x as Date).getTime() - (b.x as Date).getTime());
+                }
+            });
+            
+            setIsLoadingData(false);
+            
+            // Mark this range as loaded to prevent duplicate requests
+            setLoadedRanges(prev => ({
+                ...prev,
+                [direction]: true
+            }));
+        }, 500); // 500ms loading simulation
+    }, [isLoadingData, loadedRanges]);
+    
+    // Handle panning to update current domain for weekend calculations
+    const handlePan = React.useCallback((newDomain: [Date, Date]) => {
+        setCurrentDomain(newDomain);
+    }, []);
+    
 
     const mockMetrics: StockMetric[] = [
         { label: 'P/E Ratio (TTM)', value: '28.5' },
@@ -214,24 +282,34 @@ export default function TickerPage() {
                     <Box sx={tickerStyles.chartSection}>
                         <Card sx={tickerStyles.chartCard}>
                             <CardContent>
-                                <Typography variant="h6" gutterBottom>
-                                    Stock Performance
-                                </Typography>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                    <Typography variant="h6">
+                                        Stock Performance
+                                    </Typography>
+                                </Box>
                                 <Box sx={tickerStyles.chartContainer}>
                                     <LineChart
-                                        data={SAMPLE_STOCK_DATA}
-                                        width="100%"
-                                        height="100%"
-                                        xAxisType="time"
-                                        xDomain={chartXDomain}
+                                        data={chartData}
+                                        dimensions={{ width: '100%', height: '100%' }}
+                                        axes={{
+                                            xAxisType: 'time',
+                                            xDomain: chartXDomain,
+                                            formatX: dateFormatter,
+                                            formatY: currencyFormatter,
+											tooltipFormatX: dateFormatterFull,
+                                            tooltipFormatY: currencyFormatterFull
+                                        }}
                                         xHighlightRanges={weekendRanges}
-                                        formatX={dateFormatter}
-                                        formatY={currencyFormatter}
-                                        showDots={true}
-                                        showXGrid={true}
-                                        showYGrid={false}
-                                        animate={true}
-                                        showTooltip={true}
+                                        grid={{ showXGrid: true, showYGrid: false }}
+                                        interaction={{
+                                            showDots: true,
+                                            showTooltip: true,
+                                            enablePanning: true,
+                                            onPan: handlePan,
+                                            onDataNeeded: handleDataNeeded
+                                        }}
+                                        animation={{ animate: true, animateOnDataChange: false }}
+                                        errorHandling={{ loading: isLoadingData }}
                                     />
                                 </Box>
                             </CardContent>
